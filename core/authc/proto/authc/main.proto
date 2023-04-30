@@ -1,0 +1,32 @@
+// grpcui -plaintext localhost:9001
+
+// protoc -I "./proto/authc" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+// goctl rpc protoc "./proto/authc/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style go_zero
+
+syntax = "proto3";
+
+package shrine.authc;
+
+option go_package = "./pb";
+
+import "validate/validate.proto";
+
+message LoginInput {
+  int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  string username = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
+  string password = 3 [(validate.rules).string.pattern = "^[@$_a-zA-Z0-9]{5,8}$"];
+}
+
+message LoginOutput {
+  int64 accountId = 1; // 唯一ID
+  string username = 2; // 用户名
+  int64 userId = 3; // 关联的用户ID
+  int64 shopId = 4; // 所属店铺
+  int64 sysType = 5; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 isAdmin = 6; // 是否是管理员
+}
+
+service Service {
+  // Login 用户登录
+  rpc Login(LoginInput) returns(LoginOutput);
+}
