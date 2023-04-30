@@ -1,0 +1,21 @@
+Name: shrine.authz.rpc
+ListenOn: 0.0.0.0:9002
+Mode: dev
+
+Log:
+  ServiceName: shrine.authz.rpc
+  Encoding: plain
+  Level: info
+
+Redis:
+  Host: # replace me
+  Type: # replace me
+
+Cache:
+  - Host: # replace me
+
+MySQL:
+  User: # replace me
+  Passwd: # replace me
+  Addr: # replace me
+  DBName: authz

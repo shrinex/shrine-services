@@ -1,0 +1,211 @@
+// grpcui -plaintext localhost:9002
+
+// goctl rpc protoc "./proto/authz/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// protoc -I "./proto/authz" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+
+syntax = "proto3";
+
+package shrine.authz;
+
+option go_package = "./pb";
+
+import "validate/validate.proto";
+
+message Role {
+  int64 roleId = 1; // 角色ID
+  string name = 2; // 角色名称
+  string remark = 3; // 备注
+  int64 creatorId = 4; // 创建者ID
+  int64 shopId = 5; // 所属店铺ID
+  int64 sysType = 6; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 createTime = 7; // 创建时间
+  int64 updateTime = 8; // 更新时间
+}
+
+message ResourceGroup {
+  int64 groupId = 1; // 分组ID
+  string name = 2; // 分组名称
+  string remark = 3; // 备注
+  int64 sysType = 4; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 createTime = 6; // 创建时间
+  int64 updateTime = 7; // 更新时间
+}
+
+message Resource {
+  int64 resourceId = 1; // 资源ID
+  string name = 2; // 资源名称
+  string method = 3; // 请求方法
+  string pattern = 4; // 资源路径（ant style）
+  int64 sysType = 5; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 createTime = 6; // 创建时间
+  int64 updateTime = 7; // 更新时间
+}
+
+message Menu {
+  int64 menuId = 1; // 菜单ID
+  string name = 2; // 菜单名称
+  string icon = 3; // 图标
+  int64 parentId = 4; //父级菜单ID,0表示一级菜单
+  int64 level = 5; // 层级[1-3]
+  string path = 6; // 路径,从一级菜单ID到当前菜单ID
+  int64 sysType = 7; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 weight = 8; // 权重
+  int64 createTime = 9; // 创建时间
+  int64 updateTime = 10; // 更新时间
+}
+
+message AddRoleInput {
+  string name = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 角色名称
+  string remark = 2 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
+  int64 creatorId = 3 [(validate.rules).int64.gte = 0]; // 创建者ID
+  int64 shopId = 4 [(validate.rules).int64.gte = 0]; // 所属店铺ID
+  int64 sysType = 5 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+}
+
+message AddRoleOutput {
+  int64 roleId = 1;
+}
+
+message AddResourceGroupInput {
+  string name = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 分组名称
+  string remark = 2 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
+  int64 sysType = 3 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+}
+
+message AddResourceGroupOutput {
+  int64 groupId = 1;
+}
+
+message AddResourceInput {
+  string name = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 资源名称
+  string method = 2 [(validate.rules).string = {in: ["GET", "PUT", "POST", "DELETE"]}]; // 请求方法
+  string pattern = 3 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 资源路径（ant style）
+  int64 groupId = 4 [(validate.rules).int64.gte = 0]; // 所属分组ID
+  int64 sysType = 5 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+}
+
+message AddResourceOutput {
+  int64 resourceId = 1;
+}
+
+message AddMenuInput {
+  string name = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 菜单名称
+  string icon = 2 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 图标
+  int64 parentId = 3 [(validate.rules).int64.gte = 0]; // 父级菜单ID,0表示一级菜单
+  int64 sysType = 4 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  int64 weight = 5 [(validate.rules).int64.gte = 0]; // 权重
+}
+
+message AddMenuOutput {
+  int64 menuId = 1;
+}
+
+message RemoveRoleInput {
+  int64 roleId = 1 [(validate.rules).int64.gte = 0];
+}
+
+message RemoveRoleOutput {
+}
+
+message RemoveResourceGroupInput {
+  int64 groupId = 1 [(validate.rules).int64.gte = 0];
+}
+
+message RemoveResourceGroupOutput {
+}
+
+message RemoveResourceInput {
+  int64 resourceId = 1 [(validate.rules).int64.gte = 0];
+}
+
+message RemoveResourceOutput {
+}
+
+message RemoveMenuInput {
+  int64 menuId = 1 [(validate.rules).int64.gte = 0];
+}
+
+message RemoveMenuOutput {
+}
+
+message ListRolesInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0];
+  int64 sysType = 2 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  int64 isAdmin = 3 [(validate.rules).int64 = {in: [0, 1]}];
+}
+
+message ListRolesOutput {
+  repeated Role roles = 1;
+}
+
+message PageResourcesGroupsInput {
+  int64 pageNo = 1 [(validate.rules).int64.gte = 1];
+  int64 pageSize = 2 [(validate.rules).int64 = {gte: 1, lte: 100}];
+  int64 sysType = 3 [(validate.rules).int64 = {in: [1, 2, 3]}];
+}
+
+message PageResourcesGroupsOutput {
+  int64 pages = 1; // 总页数
+  int64 total = 2; // 总条数
+  repeated ResourceGroup rows = 3;
+}
+
+message ListResourcesInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0];
+  int64 sysType = 2 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  int64 isAdmin = 3 [(validate.rules).int64 = {in: [0, 1]}];
+}
+
+message ListResourcesOutput {
+  repeated Resource resources = 1;
+}
+
+message PageMenusInput {
+  int64 pageNo = 1 [(validate.rules).int64.gte = 1];
+  int64 pageSize = 2 [(validate.rules).int64 = {gte: 1, lte: 100}];
+  int64 sysType = 3 [(validate.rules).int64 = {in: [1, 2, 3]}];
+}
+
+message PageMenusOutput {
+  int64 pages = 1; // 总页数
+  int64 total = 2; // 总条数
+  repeated Menu rows = 3;
+}
+
+service Service {
+  // AddRole 添加角色
+  rpc AddRole(AddRoleInput) returns(AddRoleOutput);
+
+  // AddResource 添加资源
+  rpc AddResource(AddResourceInput) returns(AddResourceOutput);
+
+  // AddResourceGroup 添加资源分组
+  rpc AddResourceGroup(AddResourceGroupInput) returns(AddResourceGroupOutput);
+
+  // AddMenu 添加菜单
+  rpc AddMenu(AddMenuInput) returns(AddMenuOutput);
+
+  // RemoveRole 删除角色
+  rpc RemoveRole(RemoveRoleInput) returns(RemoveRoleOutput);
+
+  // RemoveResource 删除资源
+  rpc RemoveResource(RemoveResourceInput) returns(RemoveResourceOutput);
+
+  // RemoveResourceGroup 删除资源分组
+  rpc RemoveResourceGroup(RemoveResourceGroupInput) returns(RemoveResourceGroupOutput);
+
+  // RemoveMenu 删除菜单
+  rpc RemoveMenu(RemoveMenuInput) returns(RemoveMenuOutput);
+
+  // ListRoles 查询用户拥有的角色列表
+  rpc ListRoles(ListRolesInput) returns(ListRolesOutput);
+
+  // ListResources 查询用户拥有的资源列表
+  rpc ListResources(ListResourcesInput) returns(ListResourcesOutput);
+
+  // PageResourcesGroups 分页查询系统中的资源分组
+  rpc PageResourcesGroups(PageResourcesGroupsInput) returns(PageResourcesGroupsOutput);
+
+  // PageMenus 分页查询系统中的菜单列表
+  rpc PageMenus(PageMenusInput) returns(PageMenusOutput);
+}
