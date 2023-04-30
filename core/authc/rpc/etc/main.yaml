@@ -1,6 +1,21 @@
-Name: main.rpc
-ListenOn: 0.0.0.0:8080
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: main.rpc
+Name: shrine.authc.rpc
+ListenOn: 0.0.0.0:9001
+Mode: dev
+
+Log:
+  ServiceName: shrine.authc.rpc
+  Encoding: plain
+  Level: info
+
+Redis:
+  Host: # replace me
+  Type: node
+
+Cache:
+  - Host: # replace me
+
+MySQL:
+  User: # replace me
+  Passwd: # replace me
+  Addr: # replace me
+  DBName: authc
