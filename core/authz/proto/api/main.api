@@ -1,0 +1,26 @@
+syntax = "v1"
+
+import (
+	"type/type.api"
+)
+
+info(
+	author: "Archer"
+	email: "anyoptional@163.com"
+)
+
+@server(
+	prefix: api/v1/authz
+	group: auth
+)
+service main {
+	@doc "登录"
+	@handler ListRoles
+	get /user/roles (ListRolesReq) returns (ListRolesResp)
+	
+	@doc "登出"
+	@handler ListResources
+	get /user/resources (ListResourcesReq) returns (ListResourcesResp)
+}
+
+// goctl api go --api="./proto/api/main.api" --dir="./api" --style=go_zero
