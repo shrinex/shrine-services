@@ -1,0 +1,43 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Go template
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# macOS
+.DS_Store
+
+# IDE: Goland
+.idea/
+
+# IDE: VS Code
+.vscode/
+
+# go mod
+vendor/
+
+*.log
+*.pb.go
+*.pb.micro.go
+*.pb.*.go
+
+# artifacts from pprof tooling
+*.prof
+
+# goreleaser artifacts
+dist/
+
+# goctl gen models
+*_gen.go
+
+# local config files
+**/etc/*-local.yml

@@ -1,0 +1,19 @@
+go 1.20
+
+use (
+	./biz/merchant
+	./biz/platform
+	./biz/portal
+	./core/authc
+	./core/authz
+	./core/member
+	./core/storage
+	./std
+	./unit/cart
+	./unit/delivery
+	./unit/order
+	./unit/payment
+	./unit/product
+	./unit/search
+	./unit/shop
+)

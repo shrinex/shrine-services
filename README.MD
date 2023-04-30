@@ -1,0 +1,1 @@
+A pure Go implementation for Shrine backend services.
