@@ -17,3 +17,9 @@ use (
 	./unit/search
 	./unit/shop
 )
+
+
+replace (
+	github.com/shrinex/shield v0.0.1 => ../shield
+	github.com/shrinex/shield-web v0.0.1 => ../shield-web
+)

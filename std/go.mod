@@ -1,17 +1,13 @@
 module shrine/std
 
-// go mod edit -replace='github.com/shrinex/shield@v0.0.0-unpublished'='../../shield'
-// go get github.com/shrinex/shield@v0.0.0-unpublished
 
 go 1.20
-
-replace github.com/shrinex/shield v0.0.0-unpublished => ../../shield
 
 require (
 	github.com/bytedance/go-tagexpr/v2 v2.9.8
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/jinzhu/copier v0.3.5
-	github.com/shrinex/shield v0.0.0-unpublished
+	github.com/shrinex/shield v0.0.1
 	github.com/sony/sonyflake v1.1.0
 	github.com/stretchr/testify v1.8.2
 	github.com/zeromicro/go-zero v1.5.0

@@ -1,0 +1,18 @@
+Name: shrine.authc.api
+Host: 0.0.0.0
+Port: 8001
+Mode: dev
+
+Log:
+  ServiceName: shrine.authc.api
+  Encoding: plain
+  Level: info
+
+Redis:
+  Host: # replace me
+  Type: # replace me
+
+AuthcRpc:
+  Endpoints:
+    - 127.0.0.1:9001
+  NonBlock: true
