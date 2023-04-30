@@ -41,3 +41,6 @@ dist/
 
 # local config files
 **/etc/*-local.yml
+
+# well-knwon proto files
+/std/proto/protobuf
