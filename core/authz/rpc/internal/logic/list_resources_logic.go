@@ -34,7 +34,7 @@ func (l *ListResourcesLogic) ListResources(in *pb.ListResourcesInput) (*pb.ListR
 		return nil, err
 	}
 
-	resources, err := l.svcCtx.Cache.ResourceCache.ListResources(l.ctx, in.GetSysType(), in.GetUserId(), in.GetIsAdmin())
+	resources, err := l.svcCtx.Cache.ResourceCache.ListResources(l.ctx, in.GetSysType(), in.GetIsAdmin(), in.GetUserId())
 	if err != nil && !errors.Is(err, cache.ErrNotFound) {
 		return nil, err
 	}

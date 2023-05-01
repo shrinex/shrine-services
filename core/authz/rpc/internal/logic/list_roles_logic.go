@@ -34,7 +34,7 @@ func (l *ListRolesLogic) ListRoles(in *pb.ListRolesInput) (*pb.ListRolesOutput, 
 		return nil, err
 	}
 
-	roles, err := l.svcCtx.Cache.RoleCache.ListRoles(l.ctx, in.GetSysType(), in.GetUserId(), in.GetIsAdmin())
+	roles, err := l.svcCtx.Cache.RoleCache.ListRoles(l.ctx, in.GetSysType(), in.GetIsAdmin(), in.GetUserId())
 	if err != nil && !errors.Is(err, cache.ErrNotFound) {
 		return nil, err
 	}

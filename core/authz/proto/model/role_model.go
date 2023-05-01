@@ -17,7 +17,7 @@ type (
 	RoleModel interface {
 		roleModel
 		ListAllRolesBySysType(context.Context, int64) ([]*Role, error)
-		ListRolesByUserIdAndSysType(context.Context, int64, int64) ([]*Role, error)
+		ListRolesBySysTypeAndUserId(context.Context, int64, int64) ([]*Role, error)
 	}
 
 	customRoleModel struct {
@@ -43,7 +43,7 @@ func (m *customRoleModel) ListAllRolesBySysType(ctx context.Context, sysType int
 	return resp, nil
 }
 
-func (m *customRoleModel) ListRolesByUserIdAndSysType(ctx context.Context, userId int64, sysType int64) ([]*Role, error) {
+func (m *customRoleModel) ListRolesBySysTypeAndUserId(ctx context.Context, sysType int64, userId int64) ([]*Role, error) {
 	var resp []*Role
 	query, args := squirrel.Select("r.*").
 		From("user_role_rel ur").

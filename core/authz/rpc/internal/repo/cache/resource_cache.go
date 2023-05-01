@@ -25,12 +25,12 @@ func NewResourceCache(conf cache.CacheConf, roleCache *RoleCache, dao model.Reso
 	return &ResourceCache{dao: dao, cache: cc, roleCache: roleCache}
 }
 
-func (c *ResourceCache) ListResources(ctx context.Context, sysType, userId, isAdmin int64) ([]*model.Resource, error) {
+func (c *ResourceCache) ListResources(ctx context.Context, sysType, isAdmin, userId int64) ([]*model.Resource, error) {
 	if isAdmin == globals.FlagTrue {
 		return c.ListResourcesBySysType(ctx, sysType)
 	}
 
-	roles, err := c.roleCache.ListRoles(ctx, sysType, userId, isAdmin)
+	roles, err := c.roleCache.ListRoles(ctx, sysType, isAdmin, userId)
 	if err != nil || slices.IsEmpty(roles) {
 		return slices.Empty[*model.Resource](), err
 	}
@@ -41,7 +41,7 @@ func (c *ResourceCache) ListResources(ctx context.Context, sysType, userId, isAd
 			source <- role
 		}
 	}, func(item *model.Role, writer mr.Writer[[]*model.Resource], cancel func(error)) {
-		res, err := c.ListResourcesByRole(ctx, item)
+		res, err := c.ListResourcesByRoleId(ctx, sysType, item.RoleId)
 		if err != nil {
 			cancel(err)
 		}
@@ -76,15 +76,11 @@ func (c *ResourceCache) ListResourcesBySysType(ctx context.Context, sysType int6
 	return resp, err
 }
 
-func (c *ResourceCache) ListResourcesByRole(ctx context.Context, role *model.Role) ([]*model.Resource, error) {
-	return c.ListResourcesByRoleId(ctx, role.RoleId)
-}
-
-func (c *ResourceCache) ListResourcesByRoleId(ctx context.Context, roleId int64) ([]*model.Resource, error) {
+func (c *ResourceCache) ListResourcesByRoleId(ctx context.Context, sysType, roleId int64) ([]*model.Resource, error) {
 	resp := slices.Empty[*model.Resource]()
-	key := fmt.Sprintf("%s:%d", globals.ResourcesCacheKeyPrefix, roleId)
+	key := fmt.Sprintf("%s:%d:%d", globals.ResourcesCacheKeyPrefix, sysType, roleId)
 	err := c.cache.TakeCtx(ctx, &resp, key, func(val any) error {
-		resources, err := c.dao.ListResourcesByRoleId(ctx, roleId)
+		resources, err := c.dao.ListResourcesBySysTypeAndRoleId(ctx, sysType, roleId)
 		if err != nil {
 			return err
 		}
@@ -96,20 +92,11 @@ func (c *ResourceCache) ListResourcesByRoleId(ctx context.Context, roleId int64)
 	return resp, err
 }
 
-func (c *ResourceCache) ClearResources(ctx context.Context, sysType, userId, isAdmin int64) error {
-	if isAdmin == globals.FlagTrue {
-		return c.ClearResourcesBySysType(ctx, sysType)
-	}
-
-	roles, err := c.roleCache.ListRoles(ctx, sysType, userId, isAdmin)
-	if err != nil {
-		return err
-	}
-
-	var keys []string
-	for _, role := range roles {
-		key := fmt.Sprintf("%s:%d", globals.ResourcesCacheKeyPrefix, role.RoleId)
-		keys = append(keys, key)
+func (c *ResourceCache) ClearResources(ctx context.Context, sysType int64, roleIds ...int64) error {
+	keys := make([]string, len(roleIds)+1)
+	keys[0] = fmt.Sprintf("%s:%d", globals.ResourcesCacheKeyPrefix, sysType)
+	for i, roleId := range roleIds {
+		keys[i+1] = fmt.Sprintf("%s:%d:%d", globals.ResourcesCacheKeyPrefix, sysType, roleId)
 	}
 
 	return c.cache.DelCtx(ctx, keys...)
@@ -120,11 +107,9 @@ func (c *ResourceCache) ClearResourcesBySysType(ctx context.Context, sysType int
 	return c.cache.DelCtx(ctx, key)
 }
 
-func (c *ResourceCache) ClearResourcesByRole(ctx context.Context, role *model.Role) error {
-	return c.ClearResourcesByRoleId(ctx, role.RoleId)
-}
-
-func (c *ResourceCache) ClearResourcesByRoleId(ctx context.Context, roleId int64) error {
-	key := fmt.Sprintf("%s:%d", globals.ResourcesCacheKeyPrefix, roleId)
-	return c.cache.DelCtx(ctx, key)
+func (c *ResourceCache) ClearResourcesByRoleIds(ctx context.Context, sysType int64, roleIds ...int64) error {
+	keys := slices.Map(roleIds, func(roleId int64) string {
+		return fmt.Sprintf("%s:%d:%d", globals.ResourcesCacheKeyPrefix, sysType, roleId)
+	})
+	return c.cache.DelCtx(ctx, keys...)
 }

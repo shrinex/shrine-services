@@ -15,14 +15,19 @@ type Repository struct {
 
 func NewRepository(cfg config.Config) *Repository {
 	mysqlConn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
-	roleCache := NewRoleCache(cfg.Cache, model.NewRoleModel(mysqlConn, cfg.Cache))
-	resourceDao := model.NewResourceModel(mysqlConn, cfg.Cache)
-	menuDao := model.NewMenuModel(mysqlConn, cfg.Cache)
-	resourceGroupDao := model.NewResourceGroupModel(mysqlConn, cfg.Cache)
+	roleCache := NewRoleCache(cfg.Cache,
+		model.NewRoleModel(mysqlConn, cfg.Cache),
+	)
 	return &Repository{
-		RoleCache:          roleCache,
-		MenuCache:          NewMenuCache(cfg.Cache, menuDao),
-		ResourceGroupCache: NewResourceGroupCache(cfg.Cache, resourceGroupDao),
-		ResourceCache:      NewResourceCache(cfg.Cache, roleCache, resourceDao),
+		RoleCache: roleCache,
+		MenuCache: NewMenuCache(cfg.Cache,
+			model.NewMenuModel(mysqlConn, cfg.Cache),
+		),
+		ResourceGroupCache: NewResourceGroupCache(cfg.Cache,
+			model.NewResourceGroupModel(mysqlConn, cfg.Cache),
+		),
+		ResourceCache: NewResourceCache(cfg.Cache, roleCache,
+			model.NewResourceModel(mysqlConn, cfg.Cache),
+		),
 	}
 }

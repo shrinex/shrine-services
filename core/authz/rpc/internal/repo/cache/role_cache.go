@@ -22,16 +22,15 @@ func NewRoleCache(conf cache.CacheConf, dao model.RoleModel, opts ...cache.Optio
 	return &RoleCache{dao: dao, cache: cc}
 }
 
-func (c *RoleCache) ListRoles(ctx context.Context, sysType, userId, isAdmin int64) (roles []*model.Role, err error) {
+func (c *RoleCache) ListRoles(ctx context.Context, sysType, isAdmin, userId int64) (roles []*model.Role, err error) {
+	if isAdmin == globals.FlagTrue {
+		return c.ListRolesBySysType(ctx, sysType)
+	}
+
 	resp := slices.Empty[*model.Role]()
 	key := fmt.Sprintf("%s:%d:%d", globals.RolesCacheKeyPrefix, sysType, userId)
 	err = c.cache.TakeCtx(ctx, &resp, key, func(val any) error {
-		if isAdmin == globals.FlagTrue {
-			roles, err = c.dao.ListAllRolesBySysType(ctx, sysType)
-		} else {
-			roles, err = c.dao.ListRolesByUserIdAndSysType(ctx, userId, sysType)
-		}
-
+		roles, err = c.dao.ListRolesBySysTypeAndUserId(ctx, sysType, userId)
 		if err != nil {
 			return err
 		}
@@ -43,7 +42,40 @@ func (c *RoleCache) ListRoles(ctx context.Context, sysType, userId, isAdmin int6
 	return resp, err
 }
 
-func (c *RoleCache) ClearRoles(ctx context.Context, sysType, userId int64) error {
-	key := fmt.Sprintf("%s:%d:%d", globals.RolesCacheKeyPrefix, sysType, userId)
+func (c *RoleCache) ListRolesBySysType(ctx context.Context, sysType int64) (roles []*model.Role, err error) {
+	resp := slices.Empty[*model.Role]()
+	key := fmt.Sprintf("%s:%d", globals.RolesCacheKeyPrefix, sysType)
+	err = c.cache.TakeCtx(ctx, &resp, key, func(val any) error {
+		roles, err = c.dao.ListAllRolesBySysType(ctx, sysType)
+		if err != nil {
+			return err
+		}
+
+		*(val.(*[]*model.Role)) = roles
+		return nil
+	})
+
+	return resp, err
+}
+
+func (c *RoleCache) ClearRoles(ctx context.Context, sysType int64, userIds ...int64) error {
+	keys := make([]string, len(userIds)+1)
+	keys[0] = fmt.Sprintf("%s:%d", globals.ResourcesCacheKeyPrefix, sysType)
+	for i, userId := range userIds {
+		keys[i+1] = fmt.Sprintf("%s:%d:%d", globals.ResourcesCacheKeyPrefix, sysType, userId)
+	}
+
+	return c.cache.DelCtx(ctx, keys...)
+}
+
+func (c *RoleCache) ClearRolesBySysType(ctx context.Context, sysType int64) error {
+	key := fmt.Sprintf("%s:%d", globals.RolesCacheKeyPrefix, sysType)
 	return c.cache.DelCtx(ctx, key)
+}
+
+func (c *RoleCache) ClearRolesByUserIds(ctx context.Context, sysType int64, userIds ...int64) error {
+	keys := slices.Map(userIds, func(userId int64) string {
+		return fmt.Sprintf("%s:%d:%d", globals.RolesCacheKeyPrefix, sysType, userId)
+	})
+	return c.cache.DelCtx(ctx, keys...)
 }
