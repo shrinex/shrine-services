@@ -1,0 +1,39 @@
+// grpcui -plaintext localhost:9004
+
+// goctl rpc protoc "./proto/shop/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// protoc -I "./proto/shop" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+
+syntax = "proto3";
+
+package shrine.shop;
+
+option go_package = "./pb";
+
+import "validate/validate.proto";
+
+message Shop {
+  int64 shopId = 1; // 店铺ID
+  string name = 2; // 店铺名称
+  string intro = 3; // 店铺简介
+  string logo = 4; // 店铺logo
+  int64 status = 5; // 店铺状态,0-停业,1-营业,2-下架
+  int64 type = 6; // 店铺类型,1-自营店,2-普通店
+  int64 createTime = 7; // 创建时间
+}
+
+message AddShopInput {
+  string name = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 店铺名称
+  string intro = 2 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,64}$"]; // 店铺简介
+  string logo = 3 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 店铺logo
+  int64 status = 4 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 店铺状态,0-歇业,1-营业,2-下架
+  int64 type = 5 [(validate.rules).int64 = {in: [1, 2]}]; // 店铺类型,1-自营店,2-普通店
+}
+
+message AddShopOutput {
+  int64 shopId = 1; // 店铺ID
+}
+
+service Service {
+  // AddShop 创建店铺
+  rpc AddShop(AddShopInput) returns (AddShopOutput);
+}

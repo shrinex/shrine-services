@@ -1,9 +1,9 @@
-Name: shrine.authc.rpc
-ListenOn: 0.0.0.0:9001
+Name: shrine.shop.rpc
+ListenOn: 0.0.0.0:9002
 Mode: dev
 
 Log:
-  ServiceName: shrine.authc.rpc
+  ServiceName: shrine.shop.rpc
   Encoding: plain
   Level: info
 
@@ -18,4 +18,4 @@ MySQL:
   User: # replace me
   Passwd: # replace me
   Addr: # replace me
-  DBName: authc
+  DBName: merchant

@@ -5,7 +5,7 @@
 
 syntax = "proto3";
 
-package shrine.user;
+package shrine.member;
 
 option go_package = "./pb";
 
