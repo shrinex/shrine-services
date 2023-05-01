@@ -1,7 +1,6 @@
 -- goctl model mysql ddl -src="./proto/sql/*.sql" -dir="./proto/model" -c --style=go_zero
 
-drop database if exists authc;
-create database authc;
+create database if not exists authc;
 use authc;
 
 drop table if exists account;

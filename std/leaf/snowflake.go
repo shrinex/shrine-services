@@ -26,7 +26,6 @@ type (
 const (
 	Authc MachineID = iota + 1
 	Authz
-	User
 	Shop
 )
 

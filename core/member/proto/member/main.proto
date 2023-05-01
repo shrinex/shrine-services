@@ -1,0 +1,105 @@
+// grpcui -plaintext localhost:9003
+
+// goctl rpc protoc "./proto/member/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// protoc -I "./proto/member" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+
+syntax = "proto3";
+
+package shrine.user;
+
+option go_package = "./pb";
+
+import "validate/validate.proto";
+
+message User {
+  int64 userId = 1; // 用户ID
+  int64 shopId = 2; // 所属店铺
+  int64 sysType = 3; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  string nickname = 4; // 昵称
+  string avatar = 5; // 头像
+  string intro = 6; // 自我介绍
+  int64 active = 7; // 激活、未激活
+  int64 enabled = 8; // 启用、禁用
+  int64 createTime = 9; // 创建时间
+}
+
+message AddUserInput {
+  int64 shopId = 1 [(validate.rules).int64.gte = 0]; // 所属店铺
+  int64 sysType = 2 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  string nickname = 3 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
+  int64 enabled = 4 [(validate.rules).int64 = {in: [0, 1]}]; // 启用、禁用
+}
+
+message AddUserOutput {
+  int64 userId = 1;
+}
+
+message RemoveUserInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0]; // 用户ID
+}
+
+message RemoveUserOutput {
+}
+
+message EditUserInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0]; // 用户ID
+  int64 shopId = 2 [(validate.rules).int64.gte = 0]; // 所属店铺
+  string nickname = 3 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
+  string avatar = 4 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 头像
+  string intro = 5 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 自我介绍
+  int64 enabled = 6 [(validate.rules).int64 = {in: [0, 1]}]; // 启用、禁用
+}
+
+message EditUserOutput {
+}
+
+message GetUserInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0]; // 用户ID
+}
+
+message GetUserOutput {
+  User user = 1;
+}
+
+message PageUsersInput {
+  int64 pageNo = 1 [(validate.rules).int64.gte = 1];
+  int64 pageSize = 2 [(validate.rules).int64 = {gte: 1, lte: 100}];
+  int64 shopId = 3 [(validate.rules).int64.gte = 0]; // 所属店铺
+  int64 sysType = 4 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  string nickname = 5 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
+}
+
+message PageUsersOutput {
+  int64 pages = 1; // 总页数
+  int64 total = 2; // 总条数
+  repeated User rows = 3;
+}
+
+message UserExistsInput {
+  int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}]; // 系统类型: 1-平台端,2-商家端,3-普通用户
+  string nickname = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
+}
+
+message UserExistsOutput {
+  bool exists = 1;
+}
+
+service Service {
+  // AddUser 添加用户
+  rpc AddUser(AddUserInput) returns(AddUserOutput);
+
+  // RemoveUser 删除用户
+  rpc RemoveUser(RemoveUserInput) returns(RemoveUserOutput);
+
+  // EditUser 编辑用户信息
+  rpc EditUser(EditUserInput) returns(EditUserOutput);
+
+  // GetUser 获取用户信息
+  rpc GetUser(GetUserInput) returns(GetUserOutput);
+
+  // PageUsers 分页获取用户列表
+  rpc PageUsers(PageUsersInput) returns(PageUsersOutput);
+
+  // UserExists 判断用户是否已存在
+  rpc UserExists(UserExistsInput) returns(UserExistsOutput);
+}

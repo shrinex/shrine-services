@@ -31,6 +31,11 @@ func NewRemoveResourceLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Re
 
 // RemoveResource 删除资源
 func (l *RemoveResourceLogic) RemoveResource(in *pb.RemoveResourceInput) (*pb.RemoveResourceOutput, error) {
+	err := in.Validate()
+	if err != nil {
+		return nil, err
+	}
+
 	resource, err := l.svcCtx.DB.ResourceDao.FindOne(l.ctx, in.GetResourceId())
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {

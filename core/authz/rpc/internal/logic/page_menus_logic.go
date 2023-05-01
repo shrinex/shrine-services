@@ -2,12 +2,12 @@ package logic
 
 import (
 	"context"
+	"core/authz/rpc/internal/svc"
+	"core/authz/rpc/pb"
 	"github.com/jinzhu/copier"
 	"shrine/std/conv"
 	"shrine/std/utils/page"
-
-	"core/authz/rpc/internal/svc"
-	"core/authz/rpc/pb"
+	"shrine/std/utils/slices"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -36,6 +36,14 @@ func (l *PageMenusLogic) PageMenus(in *pb.PageMenusInput) (*pb.PageMenusOutput, 
 	total, err := l.svcCtx.DB.MenuDao.CountMenus(l.ctx, in.GetSysType())
 	if err != nil {
 		return nil, err
+	}
+
+	if total <= 0 {
+		return &pb.PageMenusOutput{
+			Pages: 0,
+			Total: 0,
+			Rows:  slices.Empty[*pb.Menu](),
+		}, nil
 	}
 
 	menus, err := l.svcCtx.DB.MenuDao.PageMenus(l.ctx, in.GetPageNo(), in.GetPageSize(), in.GetSysType())

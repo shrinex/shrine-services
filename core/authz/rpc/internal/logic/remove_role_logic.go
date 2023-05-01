@@ -30,6 +30,11 @@ func NewRemoveRoleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Remove
 
 // RemoveRole 删除角色
 func (l *RemoveRoleLogic) RemoveRole(in *pb.RemoveRoleInput) (*pb.RemoveRoleOutput, error) {
+	err := in.Validate()
+	if err != nil {
+		return nil, err
+	}
+
 	role, err := l.svcCtx.DB.RoleDao.FindOne(l.ctx, in.GetRoleId())
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {

@@ -5,6 +5,7 @@ import (
 	"github.com/jinzhu/copier"
 	"shrine/std/conv"
 	"shrine/std/utils/page"
+	"shrine/std/utils/slices"
 
 	"core/authz/rpc/internal/svc"
 	"core/authz/rpc/pb"
@@ -36,6 +37,14 @@ func (l *PageResourcesGroupsLogic) PageResourcesGroups(in *pb.PageResourcesGroup
 	total, err := l.svcCtx.DB.ResourceGroupDao.CountResourceGroups(l.ctx, in.GetSysType())
 	if err != nil {
 		return nil, err
+	}
+
+	if total <= 0 {
+		return &pb.PageResourcesGroupsOutput{
+			Pages: 0,
+			Total: 0,
+			Rows:  slices.Empty[*pb.ResourceGroup](),
+		}, nil
 	}
 
 	resourceGroups, err := l.svcCtx.DB.ResourceGroupDao.PageResourceGroups(l.ctx, in.GetPageNo(), in.GetPageSize(), in.GetSysType())

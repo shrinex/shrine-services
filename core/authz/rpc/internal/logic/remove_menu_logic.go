@@ -25,7 +25,12 @@ func NewRemoveMenuLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Remove
 
 // RemoveMenu 删除菜单
 func (l *RemoveMenuLogic) RemoveMenu(in *pb.RemoveMenuInput) (*pb.RemoveMenuOutput, error) {
-	err := l.svcCtx.DB.MenuDao.Delete(l.ctx, in.GetMenuId())
+	err := in.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	err = l.svcCtx.DB.MenuDao.Delete(l.ctx, in.GetMenuId())
 	if err != nil {
 		return nil, err
 	}

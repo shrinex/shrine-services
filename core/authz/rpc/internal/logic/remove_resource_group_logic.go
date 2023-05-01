@@ -25,7 +25,12 @@ func NewRemoveResourceGroupLogic(ctx context.Context, svcCtx *svc.ServiceContext
 
 // RemoveResourceGroup 删除资源分组
 func (l *RemoveResourceGroupLogic) RemoveResourceGroup(in *pb.RemoveResourceGroupInput) (*pb.RemoveResourceGroupOutput, error) {
-	err := l.svcCtx.DB.ResourceGroupDao.Delete(l.ctx, in.GetGroupId())
+	err := in.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	err = l.svcCtx.DB.ResourceGroupDao.Delete(l.ctx, in.GetGroupId())
 	if err != nil {
 		return nil, err
 	}
