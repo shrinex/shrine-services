@@ -1,7 +1,7 @@
 package main
 
 import (
-	"core/authz/api/internal/realms"
+	"core/authz/rpc/realms"
 	"flag"
 	"fmt"
 	"github.com/shrinex/shield-web/chain"

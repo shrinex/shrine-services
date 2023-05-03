@@ -2,8 +2,8 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"github.com/Masterminds/squirrel"
-	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"shrine/std/utils/slices"
 )
@@ -15,6 +15,7 @@ type (
 	// and implement the added methods in customRoleResourceRelModel.
 	RoleResourceRelModel interface {
 		roleResourceRelModel
+		DeleteByRoleId(context.Context, int64) error
 		CountRoleIdsByResourceId(context.Context, int64) (int64, error)
 		PageRoleIdsByResourceId(context.Context, int64, int64, int64) ([]int64, error)
 	}
@@ -25,10 +26,16 @@ type (
 )
 
 // NewRoleResourceRelModel returns a model for the database table.
-func NewRoleResourceRelModel(conn sqlx.SqlConn, c cache.CacheConf) RoleResourceRelModel {
+func NewRoleResourceRelModel(conn sqlx.SqlConn) RoleResourceRelModel {
 	return &customRoleResourceRelModel{
-		defaultRoleResourceRelModel: newRoleResourceRelModel(conn, c),
+		defaultRoleResourceRelModel: newRoleResourceRelModel(conn),
 	}
+}
+
+func (m *customRoleResourceRelModel) DeleteByRoleId(ctx context.Context, roleId int64) error {
+	query := fmt.Sprintf("delete from %s where `role_id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, roleId)
+	return err
 }
 
 func (m *customRoleResourceRelModel) CountRoleIdsByResourceId(ctx context.Context, resourceId int64) (int64, error) {
@@ -38,7 +45,7 @@ func (m *customRoleResourceRelModel) CountRoleIdsByResourceId(ctx context.Contex
 
 	var resp int64
 	query, args := builder.MustSql()
-	err := m.QueryRowNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }
 
@@ -51,6 +58,6 @@ func (m *customRoleResourceRelModel) PageRoleIdsByResourceId(ctx context.Context
 		MustSql()
 
 	resp := slices.Empty[int64]()
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }

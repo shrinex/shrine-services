@@ -1,0 +1,22 @@
+syntax = "v1"
+
+import (
+	"type/type.api"
+)
+
+info(
+	author: "Archer"
+	email: "anyoptional@163.com"
+)
+
+@server(
+	prefix: api/v1/shop
+	group: shop
+)
+service main {
+	@doc "创建店铺"
+	@handler CreateShop
+	put / (CreateShopReq) returns (CreateShopResp)
+}
+
+// goctl api go --api="./proto/api/main.api" --dir="./api" --style=go_zero

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type response struct {
+type Response struct {
 	Code    int32  `json:"code"`    // 错误码
 	Message string `json:"message"` // 错误信息
 	Data    any    `json:"data"`    // 响应体
@@ -16,21 +16,21 @@ type response struct {
 
 func ErrorCtx(ctx context.Context, w http.ResponseWriter, err error) {
 	if s, ok := status.FromError(err); ok {
-		httpx.OkJsonCtx(ctx, w, &response{
+		httpx.OkJsonCtx(ctx, w, &Response{
 			Code:    int32(s.Code()),
 			Message: s.Message(),
 		})
 		return
 	}
 
-	httpx.OkJsonCtx(ctx, w, &response{
+	httpx.OkJsonCtx(ctx, w, &Response{
 		Code:    int32(codes.Internal),
 		Message: err.Error(),
 	})
 }
 
 func OkJsonCtx(ctx context.Context, w http.ResponseWriter, v any) {
-	httpx.OkJsonCtx(ctx, w, &response{
+	httpx.OkJsonCtx(ctx, w, &Response{
 		Code:    int32(codes.OK),
 		Message: codes.OK.String(),
 		Data:    v,

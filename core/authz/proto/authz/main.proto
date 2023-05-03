@@ -1,7 +1,8 @@
 // grpcui -plaintext localhost:9002
 
-// goctl rpc protoc "./proto/authz/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// mkdir ./rpc/pb
 // protoc -I "./proto/authz" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+// goctl rpc protoc "./proto/authz/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
 
 syntax = "proto3";
 

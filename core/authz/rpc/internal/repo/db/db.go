@@ -22,9 +22,9 @@ func NewRepository(cfg config.Config) *Repository {
 		MenuDao:          model.NewMenuModel(mysqlConn, cfg.Cache),
 		RoleDao:          model.NewRoleModel(mysqlConn, cfg.Cache),
 		ResourceDao:      model.NewResourceModel(mysqlConn, cfg.Cache),
-		UserRoleDao:      model.NewUserRoleRelModel(mysqlConn, cfg.Cache),
-		RoleMenuDao:      model.NewRoleMenuRelModel(mysqlConn, cfg.Cache),
-		RoleResourceDao:  model.NewRoleResourceRelModel(mysqlConn, cfg.Cache),
-		ResourceGroupDao: model.NewResourceGroupModel(mysqlConn, cfg.Cache),
+		UserRoleDao:      model.NewUserRoleRelModel(mysqlConn),
+		RoleMenuDao:      model.NewRoleMenuRelModel(mysqlConn),
+		RoleResourceDao:  model.NewRoleResourceRelModel(mysqlConn),
+		ResourceGroupDao: model.NewResourceGroupModel(mysqlConn),
 	}
 }

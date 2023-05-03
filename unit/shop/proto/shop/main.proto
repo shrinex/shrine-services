@@ -1,7 +1,8 @@
 // grpcui -plaintext localhost:9004
 
-// goctl rpc protoc "./proto/shop/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// mkdir ./rpc/pb
 // protoc -I "./proto/shop" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+// goctl rpc protoc "./proto/shop/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
 
 syntax = "proto3";
 
@@ -36,4 +37,10 @@ message AddShopOutput {
 service Service {
   // AddShop 创建店铺
   rpc AddShop(AddShopInput) returns (AddShopOutput);
+
+  // AddShopConfirm 创建店铺确认
+  rpc AddShopConfirm(AddShopInput) returns (AddShopOutput);
+
+  // AddShopCancel 创建店铺回滚
+  rpc AddShopCancel(AddShopInput) returns (AddShopOutput);
 }

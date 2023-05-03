@@ -27,3 +27,15 @@ func (s *ServiceServer) AddShop(ctx context.Context, in *pb.AddShopInput) (*pb.A
 	l := logic.NewAddShopLogic(ctx, s.svcCtx)
 	return l.AddShop(in)
 }
+
+// AddShopConfirm 创建店铺确认
+func (s *ServiceServer) AddShopConfirm(ctx context.Context, in *pb.AddShopInput) (*pb.AddShopOutput, error) {
+	l := logic.NewAddShopConfirmLogic(ctx, s.svcCtx)
+	return l.AddShopConfirm(in)
+}
+
+// AddShopCancel 创建店铺回滚
+func (s *ServiceServer) AddShopCancel(ctx context.Context, in *pb.AddShopInput) (*pb.AddShopOutput, error) {
+	l := logic.NewAddShopCancelLogic(ctx, s.svcCtx)
+	return l.AddShopCancel(in)
+}

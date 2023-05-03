@@ -1,4 +1,4 @@
--- goctl model mysql ddl -src="./proto/sql/*.sql" -dir="./proto/model" -c --style=go_zero
+-- goctl model mysql ddl -src="./proto/sql/account.sql" -dir="./proto/model" -c --style=go_zero
 
 create database if not exists authc;
 use authc;

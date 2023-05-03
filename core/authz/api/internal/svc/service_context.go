@@ -2,7 +2,7 @@ package svc
 
 import (
 	"core/authz/api/internal/config"
-	"core/authz/api/internal/realms"
+	"core/authz/rpc/realms"
 	"core/authz/rpc/service"
 	"github.com/shrinex/shield/authc"
 	"github.com/shrinex/shield/authz"

@@ -7,10 +7,6 @@ Log:
   Encoding: plain
   Level: info
 
-Redis:
-  Host: # replace me
-  Type: # replace me
-
 Cache:
   - Host: # replace me
 

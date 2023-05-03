@@ -27,3 +27,21 @@ func (s *ServiceServer) Login(ctx context.Context, in *pb.LoginInput) (*pb.Login
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)
 }
+
+// Register 用户注册
+func (s *ServiceServer) Register(ctx context.Context, in *pb.RegisterInput) (*pb.RegisterOutput, error) {
+	l := logic.NewRegisterLogic(ctx, s.svcCtx)
+	return l.Register(in)
+}
+
+// RegisterConfirm 用户注册确认
+func (s *ServiceServer) RegisterConfirm(ctx context.Context, in *pb.RegisterInput) (*pb.RegisterOutput, error) {
+	l := logic.NewRegisterConfirmLogic(ctx, s.svcCtx)
+	return l.RegisterConfirm(in)
+}
+
+// RegisterCancel 用户注册回滚
+func (s *ServiceServer) RegisterCancel(ctx context.Context, in *pb.RegisterInput) (*pb.RegisterOutput, error) {
+	l := logic.NewRegisterCancelLogic(ctx, s.svcCtx)
+	return l.RegisterCancel(in)
+}

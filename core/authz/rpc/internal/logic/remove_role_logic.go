@@ -99,5 +99,15 @@ func (l *RemoveRoleLogic) RemoveRole(in *pb.RemoveRoleInput) (*pb.RemoveRoleOutp
 		return nil, err
 	}
 
+	err = l.svcCtx.DB.RoleMenuDao.DeleteByRoleId(l.ctx, in.GetRoleId())
+	if err != nil {
+		return nil, err
+	}
+
+	err = l.svcCtx.DB.RoleResourceDao.DeleteByRoleId(l.ctx, in.GetRoleId())
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.RemoveRoleOutput{}, nil
 }

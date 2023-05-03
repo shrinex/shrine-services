@@ -1,0 +1,38 @@
+Name: shrine.platform.api
+Host: 0.0.0.0
+Port: 10010
+Mode: dev
+
+Log:
+  ServiceName: shrine.platform.api
+  Encoding: plain
+  Level: info
+
+Redis:
+  Host: # replace me
+  Type: node
+
+MySQL:
+  User: # replace me
+  Passwd: # replace me
+  Addr: # replace me
+  DBName: dtm_barrier
+
+AuthcRpc:
+  Endpoints:
+    - 127.0.0.1:9001
+  NonBlock: true
+
+AuthzRpc:
+  Endpoints:
+    - 127.0.0.1:9002
+  NonBlock: true
+
+ShopRpc:
+  Endpoints:
+    - 127.0.0.1:9004
+  NonBlock: true
+
+Dtm:
+  GRPCServer: 127.0.0.1:36790
+  HTTPServer: http://127.0.0.1:36789/api/dtmsvr

@@ -39,6 +39,7 @@ func (l *AddResourceLogic) AddResource(in *pb.AddResourceInput) (*pb.AddResource
 		return nil, err
 	}
 
+	// 添加资源
 	resource := &model.Resource{
 		ResourceId: l.svcCtx.Leaf.MustNextID(),
 		GroupId:    in.GetGroupId(),
@@ -48,6 +49,12 @@ func (l *AddResourceLogic) AddResource(in *pb.AddResourceInput) (*pb.AddResource
 		SysType:    in.GetSysType(),
 	}
 	_, err = l.svcCtx.DB.ResourceDao.Insert(l.ctx, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	// 清除管理员资源缓存
+	err = l.svcCtx.Cache.ResourceCache.ClearResourcesBySysType(l.ctx, in.GetSysType())
 	if err != nil {
 		return nil, err
 	}

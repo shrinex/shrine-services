@@ -70,6 +70,10 @@ func (a *authzAuthority) Implies(authority authz.Authority) bool {
 		return false
 	}
 
+	if len(a.method) <= 0 {
+		return antMatcher.Matches(a.pattern, that.pattern)
+	}
+
 	return a.method == that.method && antMatcher.Matches(a.pattern, that.pattern)
 }
 

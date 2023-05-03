@@ -1,15 +1,11 @@
 Name: shrine.shop.rpc
-ListenOn: 0.0.0.0:9002
+ListenOn: 0.0.0.0:9004
 Mode: dev
 
 Log:
   ServiceName: shrine.shop.rpc
   Encoding: plain
   Level: info
-
-Redis:
-  Host: # replace me
-  Type: # replace me
 
 Cache:
   - Host: # replace me

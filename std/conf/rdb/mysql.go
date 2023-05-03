@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-type MySQL struct {
+type MySQLConf struct {
 	User   string // Username
 	Passwd string // Password (requires User)
 	Addr   string // Network address (requires Net)
 	DBName string // Database name
 }
 
-func (ms *MySQL) FormatDSN() string {
+func (ms *MySQLConf) FormatDSN() string {
 	cfg := mysql.NewConfig()
 	cfg.Net = "tcp"
 	cfg.Addr = ms.Addr

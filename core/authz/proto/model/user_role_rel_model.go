@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
-	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"shrine/std/utils/slices"
 )
@@ -25,9 +24,9 @@ type (
 )
 
 // NewUserRoleRelModel returns a model for the database table.
-func NewUserRoleRelModel(conn sqlx.SqlConn, c cache.CacheConf) UserRoleRelModel {
+func NewUserRoleRelModel(conn sqlx.SqlConn) UserRoleRelModel {
 	return &customUserRoleRelModel{
-		defaultUserRoleRelModel: newUserRoleRelModel(conn, c),
+		defaultUserRoleRelModel: newUserRoleRelModel(conn),
 	}
 }
 
@@ -38,7 +37,7 @@ func (m *customUserRoleRelModel) CountUserIdsByRoleId(ctx context.Context, roleI
 
 	var resp int64
 	query, args := builder.MustSql()
-	err := m.QueryRowNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }
 
@@ -51,6 +50,6 @@ func (m *customUserRoleRelModel) PageUserIdsByRoleId(ctx context.Context, offset
 		MustSql()
 
 	resp := slices.Empty[int64]()
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }

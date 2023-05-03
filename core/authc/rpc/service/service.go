@@ -13,12 +13,22 @@ import (
 )
 
 type (
-	LoginInput  = pb.LoginInput
-	LoginOutput = pb.LoginOutput
+	LoginInput           = pb.LoginInput
+	LoginOutput          = pb.LoginOutput
+	RegisterInput        = pb.RegisterInput
+	RegisterOutput       = pb.RegisterOutput
+	RegisterRevertInput  = pb.RegisterRevertInput
+	RegisterRevertOutput = pb.RegisterRevertOutput
 
 	Service interface {
 		// Login 用户登录
 		Login(ctx context.Context, in *LoginInput, opts ...grpc.CallOption) (*LoginOutput, error)
+		// Register 用户注册
+		Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
+		// RegisterConfirm 用户注册确认
+		RegisterConfirm(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
+		// RegisterCancel 用户注册回滚
+		RegisterCancel(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
 	}
 
 	defaultService struct {
@@ -36,4 +46,22 @@ func NewService(cli zrpc.Client) Service {
 func (m *defaultService) Login(ctx context.Context, in *LoginInput, opts ...grpc.CallOption) (*LoginOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
 	return client.Login(ctx, in, opts...)
+}
+
+// Register 用户注册
+func (m *defaultService) Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.Register(ctx, in, opts...)
+}
+
+// RegisterConfirm 用户注册确认
+func (m *defaultService) RegisterConfirm(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.RegisterConfirm(ctx, in, opts...)
+}
+
+// RegisterCancel 用户注册回滚
+func (m *defaultService) RegisterCancel(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.RegisterCancel(ctx, in, opts...)
 }

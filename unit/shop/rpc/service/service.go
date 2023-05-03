@@ -20,6 +20,10 @@ type (
 	Service interface {
 		// AddShop 创建店铺
 		AddShop(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error)
+		// AddShopConfirm 创建店铺确认
+		AddShopConfirm(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error)
+		// AddShopCancel 创建店铺回滚
+		AddShopCancel(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error)
 	}
 
 	defaultService struct {
@@ -37,4 +41,16 @@ func NewService(cli zrpc.Client) Service {
 func (m *defaultService) AddShop(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
 	return client.AddShop(ctx, in, opts...)
+}
+
+// AddShopConfirm 创建店铺确认
+func (m *defaultService) AddShopConfirm(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.AddShopConfirm(ctx, in, opts...)
+}
+
+// AddShopCancel 创建店铺回滚
+func (m *defaultService) AddShopCancel(ctx context.Context, in *AddShopInput, opts ...grpc.CallOption) (*AddShopOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.AddShopCancel(ctx, in, opts...)
 }

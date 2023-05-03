@@ -27,6 +27,7 @@ const (
 	Authc MachineID = iota + 1
 	Authz
 	Merchant
+	Dtm
 )
 
 var (

@@ -24,7 +24,7 @@ func NewRepository(cfg config.Config) *Repository {
 			model.NewMenuModel(mysqlConn, cfg.Cache),
 		),
 		ResourceGroupCache: NewResourceGroupCache(cfg.Cache,
-			model.NewResourceGroupModel(mysqlConn, cfg.Cache),
+			model.NewResourceGroupModel(mysqlConn),
 		),
 		ResourceCache: NewResourceCache(cfg.Cache, roleCache,
 			model.NewResourceModel(mysqlConn, cfg.Cache),

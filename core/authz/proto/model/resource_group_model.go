@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"github.com/Masterminds/squirrel"
-	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"shrine/std/utils/slices"
 )
@@ -25,9 +24,9 @@ type (
 )
 
 // NewResourceGroupModel returns a model for the database table.
-func NewResourceGroupModel(conn sqlx.SqlConn, c cache.CacheConf) ResourceGroupModel {
+func NewResourceGroupModel(conn sqlx.SqlConn) ResourceGroupModel {
 	return &customResourceGroupModel{
-		defaultResourceGroupModel: newResourceGroupModel(conn, c),
+		defaultResourceGroupModel: newResourceGroupModel(conn),
 	}
 }
 
@@ -38,7 +37,7 @@ func (m *customResourceGroupModel) CountResourceGroups(ctx context.Context, sysT
 
 	var resp int64
 	query, args := builder.MustSql()
-	err := m.QueryRowNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }
 
@@ -52,6 +51,6 @@ func (m *customResourceGroupModel) PageResourceGroups(ctx context.Context, pageN
 		MustSql()
 
 	resp := slices.Empty[*ResourceGroup]()
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, args...)
 	return resp, err
 }

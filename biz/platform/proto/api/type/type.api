@@ -1,0 +1,29 @@
+syntax = "v1"
+
+info(
+    author: "Archer"
+    email: "anyoptional@163.com"
+)
+
+type (
+    ShopMeta {
+        Name string `json:"name" valid:"regexp('^[a-zA-Z0-9\u4e00-\u9fa5]{1,24}$'); msg:'店铺名称仅支持中文、字母和数字'"`                // 店铺名称
+        Intro string `json:"intro" valid:"regexp('^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,64}$'); msg:'简介仅支持中文、字母和数字'"` // 店铺简介
+        Logo string `json:"logo" valid:"regexp('^[/\\-?=_.a-zA-Z0-9]{1,128}$'); msg:'logo地址不合法'"`                                   // 店铺logo
+        Status int64 `json:"status" valid:"$>=0 && $<=2; msg:'无效的店铺状态'"`                                                          // 店铺状态,0-歇业,1-营业,2-下架
+        Type int64 `json:"type" valid:"$>=1 && $<=2; msg:'无效的店铺类型'"`                                                              // 店铺类型,1-自营店,2-普通店
+    }
+
+    AdminMeta {
+        Username string `json:"username" valid:"regexp('^[a-zA-Z0-9]{5,8}$'); msg:'用户名仅支持5-8位字母和数字'"` // 用户名
+        Password string `json:"password" valid:"regexp('^[@$_a-zA-Z0-9]{5,8}$'); msg:'密码格式不正确'"`           // 密码
+    }
+
+    CreateShopReq {
+        Shop ShopMeta `json:"shop"`
+        Admin AdminMeta `json:"admin"`
+    }
+
+    CreateShopResp {
+    }
+)

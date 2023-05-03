@@ -1,7 +1,8 @@
 package model
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/cache"
+	"context"
+	"fmt"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -12,6 +13,7 @@ type (
 	// and implement the added methods in customRoleMenuRelModel.
 	RoleMenuRelModel interface {
 		roleMenuRelModel
+		DeleteByRoleId(context.Context, int64) error
 	}
 
 	customRoleMenuRelModel struct {
@@ -20,8 +22,14 @@ type (
 )
 
 // NewRoleMenuRelModel returns a model for the database table.
-func NewRoleMenuRelModel(conn sqlx.SqlConn, c cache.CacheConf) RoleMenuRelModel {
+func NewRoleMenuRelModel(conn sqlx.SqlConn) RoleMenuRelModel {
 	return &customRoleMenuRelModel{
-		defaultRoleMenuRelModel: newRoleMenuRelModel(conn, c),
+		defaultRoleMenuRelModel: newRoleMenuRelModel(conn),
 	}
+}
+
+func (m *customRoleMenuRelModel) DeleteByRoleId(ctx context.Context, roleId int64) error {
+	query := fmt.Sprintf("delete from %s where `role_id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, roleId)
+	return err
 }

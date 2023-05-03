@@ -1,7 +1,8 @@
 // grpcui -plaintext localhost:9001
 
-// goctl rpc protoc "./proto/authc/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+// mkdir ./rpc/pb
 // protoc -I "./proto/authc" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+// goctl rpc protoc "./proto/authc/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
 
 syntax = "proto3";
 
@@ -26,7 +27,39 @@ message LoginOutput {
   int64 isAdmin = 6; // 是否是管理员
 }
 
+message RegisterInput {
+  int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  string username = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
+  string password = 3 [(validate.rules).string.pattern = "^[@$_a-zA-Z0-9]{5,8}$"];
+  string nickname = 4 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
+  int64 shopId = 5 [(validate.rules).int64.gte = 0]; // 所属店铺
+  int64 isAdmin = 6 [(validate.rules).int64 = {in: [0, 1]}]; // 是否是管理员
+}
+
+message RegisterOutput {
+  int64 accountId = 1;
+  int64 userId = 2;
+}
+
+message RegisterRevertInput {
+  int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  string username = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
+}
+
+message RegisterRevertOutput {
+
+}
+
 service Service {
   // Login 用户登录
   rpc Login(LoginInput) returns(LoginOutput);
+
+  // Register 用户注册
+  rpc Register(RegisterInput) returns(RegisterOutput);
+
+  // RegisterConfirm 用户注册确认
+  rpc RegisterConfirm(RegisterInput) returns(RegisterOutput);
+
+  // RegisterCancel 用户注册回滚
+  rpc RegisterCancel(RegisterInput) returns(RegisterOutput);
 }

@@ -9,5 +9,5 @@ import (
 type Config struct {
 	zrpc.RpcServerConf
 	Cache cache.CacheConf
-	MySQL rdb.MySQL
+	MySQL rdb.MySQLConf
 }

@@ -39,6 +39,7 @@ func (l *AddRoleLogic) AddRole(in *pb.AddRoleInput) (*pb.AddRoleOutput, error) {
 		return nil, err
 	}
 
+	// 添加角色
 	role := &model.Role{
 		RoleId:    l.svcCtx.Leaf.MustNextID(),
 		CreatorId: in.GetCreatorId(),
@@ -48,6 +49,12 @@ func (l *AddRoleLogic) AddRole(in *pb.AddRoleInput) (*pb.AddRoleOutput, error) {
 		SysType:   in.GetSysType(),
 	}
 	_, err = l.svcCtx.DB.RoleDao.Insert(l.ctx, role)
+	if err != nil {
+		return nil, err
+	}
+
+	// 清除管理员角色缓存
+	err = l.svcCtx.Cache.RoleCache.ClearRolesBySysType(l.ctx, in.GetSysType())
 	if err != nil {
 		return nil, err
 	}
