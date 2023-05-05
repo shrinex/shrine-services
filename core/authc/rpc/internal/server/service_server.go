@@ -34,14 +34,20 @@ func (s *ServiceServer) Register(ctx context.Context, in *pb.RegisterInput) (*pb
 	return l.Register(in)
 }
 
-// RegisterConfirm 用户注册确认
-func (s *ServiceServer) RegisterConfirm(ctx context.Context, in *pb.RegisterInput) (*pb.RegisterOutput, error) {
-	l := logic.NewRegisterConfirmLogic(ctx, s.svcCtx)
-	return l.RegisterConfirm(in)
+// AddAdminAccount 添加商家端管理员用户
+func (s *ServiceServer) AddAdminAccount(ctx context.Context, in *pb.AddAdminAccountInput) (*pb.AddAdminAccountOutput, error) {
+	l := logic.NewAddAdminAccountLogic(ctx, s.svcCtx)
+	return l.AddAdminAccount(in)
 }
 
-// RegisterCancel 用户注册回滚
-func (s *ServiceServer) RegisterCancel(ctx context.Context, in *pb.RegisterInput) (*pb.RegisterOutput, error) {
-	l := logic.NewRegisterCancelLogic(ctx, s.svcCtx)
-	return l.RegisterCancel(in)
+// AddAdminAccountConfirm 添加商家端管理员用户确认
+func (s *ServiceServer) AddAdminAccountConfirm(ctx context.Context, in *pb.AddAdminAccountInput) (*pb.AddAdminAccountOutput, error) {
+	l := logic.NewAddAdminAccountConfirmLogic(ctx, s.svcCtx)
+	return l.AddAdminAccountConfirm(in)
+}
+
+// AddAdminAccountCancel 添加商家端管理员用户回滚
+func (s *ServiceServer) AddAdminAccountCancel(ctx context.Context, in *pb.AddAdminAccountInput) (*pb.AddAdminAccountOutput, error) {
+	l := logic.NewAddAdminAccountCancelLogic(ctx, s.svcCtx)
+	return l.AddAdminAccountCancel(in)
 }

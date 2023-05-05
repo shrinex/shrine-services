@@ -5,7 +5,6 @@ import (
 	authcpb "core/authc/rpc/pb"
 	"github.com/dtm-labs/dtm/client/dtmgrpc"
 	"github.com/google/uuid"
-	"shrine/std/globals"
 	shoppb "unit/shop/rpc/pb"
 
 	"biz/platform/api/internal/svc"
@@ -53,18 +52,15 @@ func (l *CreateShopLogic) CreateShop(req *types.CreateShopReq) (resp *types.Crea
 			return err
 		}
 
-		useless := new(authcpb.RegisterOutput)
-		return tcc.CallBranch(&authcpb.RegisterInput{
+		useless := new(authcpb.AddAdminAccountOutput)
+		return tcc.CallBranch(&authcpb.AddAdminAccountInput{
 			Username: req.Admin.Username,
 			Password: req.Admin.Password,
-			Nickname: req.Admin.Username,
 			ShopId:   shop.GetShopId(),
-			SysType:  globals.SysTypeMerchant,
-			IsAdmin:  globals.FlagTrue,
 		},
-			authcServer+authcpb.Service_Register_FullMethodName,
-			authcServer+authcpb.Service_RegisterConfirm_FullMethodName,
-			authcServer+authcpb.Service_RegisterCancel_FullMethodName,
+			authcServer+authcpb.Service_AddAdminAccount_FullMethodName,
+			authcServer+authcpb.Service_AddAdminAccountConfirm_FullMethodName,
+			authcServer+authcpb.Service_AddAdminAccountCancel_FullMethodName,
 			useless)
 	})
 

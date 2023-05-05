@@ -12,7 +12,6 @@ create table user
     nickname    varchar(12)  not null comment '昵称',
     avatar      varchar(128) not null comment '头像',
     intro       varchar(36)  not null default '' comment '一句话介绍自己',
-    active      tinyint      not null comment '是否已激活,0-未激活,1-已激活',
     enabled     tinyint      not null comment '状态：0-禁用,1-启用',
     create_time datetime     not null default current_timestamp comment '创建时间',
     update_time datetime     not null default current_timestamp on update current_timestamp comment '更新时间',

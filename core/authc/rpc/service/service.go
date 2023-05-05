@@ -13,22 +13,24 @@ import (
 )
 
 type (
-	LoginInput           = pb.LoginInput
-	LoginOutput          = pb.LoginOutput
-	RegisterInput        = pb.RegisterInput
-	RegisterOutput       = pb.RegisterOutput
-	RegisterRevertInput  = pb.RegisterRevertInput
-	RegisterRevertOutput = pb.RegisterRevertOutput
+	AddAdminAccountInput  = pb.AddAdminAccountInput
+	AddAdminAccountOutput = pb.AddAdminAccountOutput
+	LoginInput            = pb.LoginInput
+	LoginOutput           = pb.LoginOutput
+	RegisterInput         = pb.RegisterInput
+	RegisterOutput        = pb.RegisterOutput
 
 	Service interface {
 		// Login 用户登录
 		Login(ctx context.Context, in *LoginInput, opts ...grpc.CallOption) (*LoginOutput, error)
 		// Register 用户注册
 		Register(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
-		// RegisterConfirm 用户注册确认
-		RegisterConfirm(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
-		// RegisterCancel 用户注册回滚
-		RegisterCancel(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error)
+		// AddAdminAccount 添加商家端管理员用户
+		AddAdminAccount(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error)
+		// AddAdminAccountConfirm 添加商家端管理员用户确认
+		AddAdminAccountConfirm(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error)
+		// AddAdminAccountCancel 添加商家端管理员用户回滚
+		AddAdminAccountCancel(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error)
 	}
 
 	defaultService struct {
@@ -54,14 +56,20 @@ func (m *defaultService) Register(ctx context.Context, in *RegisterInput, opts .
 	return client.Register(ctx, in, opts...)
 }
 
-// RegisterConfirm 用户注册确认
-func (m *defaultService) RegisterConfirm(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error) {
+// AddAdminAccount 添加商家端管理员用户
+func (m *defaultService) AddAdminAccount(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
-	return client.RegisterConfirm(ctx, in, opts...)
+	return client.AddAdminAccount(ctx, in, opts...)
 }
 
-// RegisterCancel 用户注册回滚
-func (m *defaultService) RegisterCancel(ctx context.Context, in *RegisterInput, opts ...grpc.CallOption) (*RegisterOutput, error) {
+// AddAdminAccountConfirm 添加商家端管理员用户确认
+func (m *defaultService) AddAdminAccountConfirm(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
-	return client.RegisterCancel(ctx, in, opts...)
+	return client.AddAdminAccountConfirm(ctx, in, opts...)
+}
+
+// AddAdminAccountCancel 添加商家端管理员用户回滚
+func (m *defaultService) AddAdminAccountCancel(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.AddAdminAccountCancel(ctx, in, opts...)
 }

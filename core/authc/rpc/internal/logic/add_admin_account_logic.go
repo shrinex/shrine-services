@@ -3,54 +3,59 @@ package logic
 import (
 	"context"
 	"core/authc/proto/model"
-	"core/authc/rpc/internal/svc"
-	"core/authc/rpc/pb"
+	"database/sql"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"golang.org/x/crypto/bcrypt"
 	"shrine/std/globals"
+	"shrine/std/utils/dtmx"
 	"shrine/std/utils/sqle"
+
+	"core/authc/rpc/internal/svc"
+	"core/authc/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type RegisterLogic struct {
+type AddAdminAccountLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegisterLogic {
-	return &RegisterLogic{
+func NewAddAdminAccountLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddAdminAccountLogic {
+	return &AddAdminAccountLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-// Register 用户注册
-func (l *RegisterLogic) Register(in *pb.RegisterInput) (*pb.RegisterOutput, error) {
+// AddAdminAccount 添加商家端管理员用户
+func (l *AddAdminAccountLogic) AddAdminAccount(in *pb.AddAdminAccountInput) (*pb.AddAdminAccountOutput, error) {
 	err := in.Validate()
 	if err != nil {
-		return nil, err
+		return nil, dtmx.Abort(err)
 	}
 
 	err = l.validate(in)
 	if err != nil {
-		return nil, err
+		return nil, dtmx.Abort(err)
 	}
 
 	password, err := bcrypt.GenerateFromPassword([]byte(in.GetPassword()), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, dtmx.Abort(err)
 	}
 
 	userId := l.svcCtx.Leaf.MustNextID()
 	accountId := l.svcCtx.Leaf.MustNextID()
-	err = l.svcCtx.DB.RawConn.TransactCtx(l.ctx, func(ctx context.Context, tx sqlx.Session) error {
-		_, err = l.svcCtx.DB.UserDao.TxInsert(l.ctx, tx, &model.User{
+	barrier := dtmx.MustBarrierFromGrpc(l.ctx)
+	err = barrier.CallWithDB(l.svcCtx.DB.RawDB(), func(tx *sql.Tx) error {
+		txSession := sqlx.NewSessionFromTx(tx)
+		_, err = l.svcCtx.DB.UserDao.TxInsert(l.ctx, txSession, &model.User{
 			UserId:   userId,
 			ShopId:   in.GetShopId(),
-			SysType:  in.GetSysType(),
+			SysType:  globals.SysTypeMerchant,
 			Nickname: in.GetUsername(),
 			Avatar:   "https://example.com",
 			Intro:    "这个人很懒，什么都没有留下",
@@ -58,24 +63,24 @@ func (l *RegisterLogic) Register(in *pb.RegisterInput) (*pb.RegisterOutput, erro
 		})
 		if err != nil {
 			if sqle.Is(err, sqle.DuplicateEntry) {
-				return errUserExists
+				return dtmx.Abortf(errUserExistsDesc)
 			}
 			return err
 		}
 
-		_, err = l.svcCtx.DB.AccountDao.TxInsert(l.ctx, tx, &model.Account{
+		_, err = l.svcCtx.DB.AccountDao.TxInsert(l.ctx, txSession, &model.Account{
 			AccountId: accountId,
 			UserId:    userId,
 			Username:  in.GetUsername(),
 			Password:  string(password),
-			SysType:   in.GetSysType(),
+			SysType:   globals.SysTypeMerchant,
 			ShopId:    in.GetShopId(),
-			IsAdmin:   globals.FlagFalse,
+			IsAdmin:   globals.FlagTrue,
 			Enabled:   globals.FlagTrue,
 		})
 		if err != nil {
 			if sqle.Is(err, sqle.DuplicateEntry) {
-				return errAccountExists
+				return dtmx.Abortf(errAccountExistsDesc)
 			}
 			return err
 		}
@@ -84,17 +89,17 @@ func (l *RegisterLogic) Register(in *pb.RegisterInput) (*pb.RegisterOutput, erro
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, dtmx.Retry(err)
 	}
 
-	return &pb.RegisterOutput{
+	return &pb.AddAdminAccountOutput{
 		UserId:    userId,
 		AccountId: accountId,
 	}, nil
 }
 
-func (l *RegisterLogic) validate(in *pb.RegisterInput) error {
-	exists, err := l.svcCtx.DB.AccountDao.AccountExistsBySysTypeAndUsername(l.ctx, in.GetSysType(), in.GetUsername())
+func (l *AddAdminAccountLogic) validate(in *pb.AddAdminAccountInput) error {
+	exists, err := l.svcCtx.DB.AccountDao.AccountExistsBySysTypeAndUsername(l.ctx, globals.SysTypeMerchant, in.GetUsername())
 	if err != nil {
 		return err
 	}
@@ -103,7 +108,7 @@ func (l *RegisterLogic) validate(in *pb.RegisterInput) error {
 		return errAccountExists
 	}
 
-	exists, err = l.svcCtx.DB.UserDao.UserExistsBySysTypeAndNickname(l.ctx, in.GetSysType(), in.GetUsername())
+	exists, err = l.svcCtx.DB.UserDao.UserExistsBySysTypeAndNickname(l.ctx, globals.SysTypeMerchant, in.GetUsername())
 	if err != nil {
 		return err
 	}

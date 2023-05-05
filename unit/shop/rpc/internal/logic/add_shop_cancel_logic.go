@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"shrine/std/utils/dtmx"
 
 	"unit/shop/rpc/internal/svc"
@@ -39,7 +37,8 @@ func (l *AddShopCancelLogic) AddShopCancel(in *pb.AddShopInput) (*pb.AddShopOutp
 	logx.Info("calling add shop revert...")
 	barrier := dtmx.MustBarrierFromGrpc(l.ctx)
 	err = barrier.CallWithDB(l.svcCtx.DB.RawDB, func(tx *sql.Tx) error {
-		shop, rerr := l.svcCtx.DB.ShopDao.TxFindOneByName(l.ctx, tx, in.GetName())
+		txSession := sqlx.NewSessionFromTx(tx)
+		shop, rerr := l.svcCtx.DB.ShopDao.TxFindOneByName(l.ctx, txSession, in.GetName())
 		if errors.Is(rerr, sqlx.ErrNotFound) {
 			return nil
 		}
@@ -48,11 +47,11 @@ func (l *AddShopCancelLogic) AddShopCancel(in *pb.AddShopInput) (*pb.AddShopOutp
 			return rerr
 		}
 
-		return l.svcCtx.DB.ShopDao.TxDelete(l.ctx, tx, shop.ShopId)
+		return l.svcCtx.DB.ShopDao.TxDelete(l.ctx, txSession, shop.ShopId)
 	})
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, dtmx.Retry(err)
 	}
 
 	return &pb.AddShopOutput{}, nil

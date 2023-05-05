@@ -1,4 +1,4 @@
-package bootstrap
+package dtmx
 
 import (
 	"fmt"
@@ -30,13 +30,13 @@ func init() {
 	_ = dtmdriver.Use(driver.DriverName)
 }
 
-func InitHttpDtm(mysqlConf rdb.MySQLConf, redisConf redis.RedisConf, server *rest.Server) {
+func InitHttp(mysqlConf rdb.MySQLConf, redisConf redis.RedisConf, server *rest.Server) {
 	server.AddRoutes([]rest.Route{{
 		Method: http.MethodGet,
 		Path:   "/queryPrepared",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			wrapHandler(w, r, func() error {
-				bb := mustBarrierFromQuery(r)
+				bb := MustBarrierFromQuery(r)
 				conn, err := getMySql(mysqlConf)
 				if err != nil {
 					return err
@@ -50,7 +50,7 @@ func InitHttpDtm(mysqlConf rdb.MySQLConf, redisConf redis.RedisConf, server *res
 		Path:   "/redisQueryPrepared",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			wrapHandler(w, r, func() error {
-				bb := mustBarrierFromQuery(r)
+				bb := MustBarrierFromQuery(r)
 				conn, err := getRedis(redisConf)
 				if err != nil {
 					return err
@@ -67,7 +67,7 @@ func InitGrpcWorkflow(dtmConf dtm.DtmConf, rpcConf zrpc.RpcServerConf, server *g
 }
 
 func InitHttpWorkflow(restConf rest.RestConf, dtmConf dtm.DtmConf, mysqlConf rdb.MySQLConf, redisConf redis.RedisConf, server *rest.Server) {
-	InitHttpDtm(mysqlConf, redisConf, server)
+	InitHttp(mysqlConf, redisConf, server)
 
 	server.AddRoutes([]rest.Route{{
 		Method: http.MethodPost,
@@ -85,14 +85,6 @@ func InitHttpWorkflow(restConf rest.RestConf, dtmConf dtm.DtmConf, mysqlConf rdb
 	}}, rest.WithPrefix("/api/v1/dtm"))
 
 	workflow.InitHTTP(dtmConf.HTTPServer, fmt.Sprintf("%s/api/v1/workflow/resume", getRestServer(restConf)))
-}
-
-func mustBarrierFromQuery(r *http.Request) *dtmcli.BranchBarrier {
-	bb, err := dtmcli.BarrierFromQuery(r.URL.Query())
-	if err != nil {
-		panic(err)
-	}
-	return bb
 }
 
 func wrapHandler(w http.ResponseWriter, r *http.Request, fn func() error) {

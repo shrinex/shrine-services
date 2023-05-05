@@ -13,7 +13,7 @@ import (
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 	"net/http"
-	"shrine/std/bootstrap"
+	"shrine/std/utils/dtmx"
 	_ "shrine/std/valid" // register global validator
 )
 
@@ -31,7 +31,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
 
-	bootstrap.InitHttpDtm(c.MySQL, c.Redis, server)
+	dtmx.InitHttp(c.MySQL, c.Redis, server)
 
 	server.Use(chain.NewBuilder().
 		Subject().

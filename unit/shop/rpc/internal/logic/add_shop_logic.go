@@ -5,10 +5,8 @@ import (
 	"database/sql"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"shrine/std/utils/dtmx"
-	"shrine/std/utils/verify"
+	"shrine/std/utils/sqle"
 	"unit/shop/proto/model"
 
 	"unit/shop/rpc/internal/svc"
@@ -35,18 +33,19 @@ func NewAddShopLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AddShopLo
 func (l *AddShopLogic) AddShop(in *pb.AddShopInput) (*pb.AddShopOutput, error) {
 	err := in.Validate()
 	if err != nil {
-		return nil, status.Errorf(codes.Aborted, err.Error())
+		return nil, dtmx.Abort(err)
 	}
 
 	err = l.validate(in)
 	if err != nil {
-		return nil, status.Errorf(codes.Aborted, err.Error())
+		return nil, dtmx.Abort(err)
 	}
 
 	shopId := l.svcCtx.Leaf.MustNextID()
 	barrier := dtmx.MustBarrierFromGrpc(l.ctx)
 	err = barrier.CallWithDB(l.svcCtx.DB.RawDB, func(tx *sql.Tx) error {
-		_, err = l.svcCtx.DB.ShopDao.TxInsert(l.ctx, tx, &model.Shop{
+		txSession := sqlx.NewSessionFromTx(tx)
+		_, err = l.svcCtx.DB.ShopDao.TxInsert(l.ctx, txSession, &model.Shop{
 			ShopId: shopId,
 			Name:   in.GetName(),
 			Intro:  in.GetIntro(),
@@ -55,8 +54,8 @@ func (l *AddShopLogic) AddShop(in *pb.AddShopInput) (*pb.AddShopOutput, error) {
 			Type:   in.GetType(),
 		})
 		if err != nil {
-			if verify.Duplicated(err) {
-				return status.Errorf(codes.Aborted, errShopExistsDesc)
+			if sqle.Is(err, sqle.DuplicateEntry) {
+				return dtmx.Abortf(errShopExistsDesc)
 			}
 			return err
 		}
@@ -65,7 +64,7 @@ func (l *AddShopLogic) AddShop(in *pb.AddShopInput) (*pb.AddShopOutput, error) {
 	})
 
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, dtmx.Retry(err)
 	}
 
 	return &pb.AddShopOutput{

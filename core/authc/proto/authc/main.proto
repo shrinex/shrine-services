@@ -31,9 +31,7 @@ message RegisterInput {
   int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}];
   string username = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
   string password = 3 [(validate.rules).string.pattern = "^[@$_a-zA-Z0-9]{5,8}$"];
-  string nickname = 4 [(validate.rules).string.pattern = "^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$"]; // 昵称
-  int64 shopId = 5 [(validate.rules).int64.gte = 0]; // 所属店铺
-  int64 isAdmin = 6 [(validate.rules).int64 = {in: [0, 1]}]; // 是否是管理员
+  int64 shopId = 4 [(validate.rules).int64.gte = 0]; // 所属店铺
 }
 
 message RegisterOutput {
@@ -41,13 +39,15 @@ message RegisterOutput {
   int64 userId = 2;
 }
 
-message RegisterRevertInput {
-  int64 sysType = 1 [(validate.rules).int64 = {in: [1, 2, 3]}];
-  string username = 2 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
+message AddAdminAccountInput {
+  string username = 1 [(validate.rules).string.pattern = "^[a-zA-Z0-9]{5,8}$"];
+  string password = 2 [(validate.rules).string.pattern = "^[@$_a-zA-Z0-9]{5,8}$"];
+  int64 shopId = 3 [(validate.rules).int64.gte = 0]; // 所属店铺
 }
 
-message RegisterRevertOutput {
-
+message AddAdminAccountOutput {
+  int64 accountId = 1;
+  int64 userId = 2;
 }
 
 service Service {
@@ -57,9 +57,12 @@ service Service {
   // Register 用户注册
   rpc Register(RegisterInput) returns(RegisterOutput);
 
-  // RegisterConfirm 用户注册确认
-  rpc RegisterConfirm(RegisterInput) returns(RegisterOutput);
+  // AddAdminAccount 添加商家端管理员用户
+  rpc AddAdminAccount(AddAdminAccountInput) returns(AddAdminAccountOutput);
 
-  // RegisterCancel 用户注册回滚
-  rpc RegisterCancel(RegisterInput) returns(RegisterOutput);
+  // AddAdminAccountConfirm 添加商家端管理员用户确认
+  rpc AddAdminAccountConfirm(AddAdminAccountInput) returns(AddAdminAccountOutput);
+
+  // AddAdminAccountCancel 添加商家端管理员用户回滚
+  rpc AddAdminAccountCancel(AddAdminAccountInput) returns(AddAdminAccountOutput);
 }

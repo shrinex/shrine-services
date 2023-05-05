@@ -1,8 +1,12 @@
-package verify
+package sqle
 
 import "github.com/go-sql-driver/mysql"
 
-func Duplicated(err error) bool {
+const (
+	DuplicateEntry uint16 = 1062
+)
+
+func Is(err error, code uint16) bool {
 	if err == nil {
 		return false
 	}
@@ -12,5 +16,5 @@ func Duplicated(err error) bool {
 		return false
 	}
 
-	return myerr.Number == 1062
+	return myerr.Number == code
 }

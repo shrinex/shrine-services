@@ -25,5 +25,6 @@ func NewAddShopConfirmLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ad
 
 // AddShopConfirm 创建店铺确认
 func (l *AddShopConfirmLogic) AddShopConfirm(in *pb.AddShopInput) (*pb.AddShopOutput, error) {
+	logx.Info("calling add shop confirm...")
 	return &pb.AddShopOutput{}, nil
 }

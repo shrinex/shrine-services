@@ -1,4 +1,4 @@
-package bootstrap
+package dtmx
 
 import (
 	"database/sql"
