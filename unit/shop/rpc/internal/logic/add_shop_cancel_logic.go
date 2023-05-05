@@ -36,7 +36,7 @@ func (l *AddShopCancelLogic) AddShopCancel(in *pb.AddShopInput) (*pb.AddShopOutp
 
 	logx.Info("calling add shop revert...")
 	barrier := dtmx.MustBarrierFromGrpc(l.ctx)
-	err = barrier.CallWithDB(l.svcCtx.DB.RawDB, func(tx *sql.Tx) error {
+	err = barrier.CallWithDB(l.svcCtx.DB.RawDB(), func(tx *sql.Tx) error {
 		txSession := sqlx.NewSessionFromTx(tx)
 		shop, rerr := l.svcCtx.DB.ShopDao.TxFindOneByName(l.ctx, txSession, in.GetName())
 		if errors.Is(rerr, sqlx.ErrNotFound) {

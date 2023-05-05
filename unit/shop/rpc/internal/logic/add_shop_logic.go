@@ -43,7 +43,7 @@ func (l *AddShopLogic) AddShop(in *pb.AddShopInput) (*pb.AddShopOutput, error) {
 
 	shopId := l.svcCtx.Leaf.MustNextID()
 	barrier := dtmx.MustBarrierFromGrpc(l.ctx)
-	err = barrier.CallWithDB(l.svcCtx.DB.RawDB, func(tx *sql.Tx) error {
+	err = barrier.CallWithDB(l.svcCtx.DB.RawDB(), func(tx *sql.Tx) error {
 		txSession := sqlx.NewSessionFromTx(tx)
 		_, err = l.svcCtx.DB.ShopDao.TxInsert(l.ctx, txSession, &model.Shop{
 			ShopId: shopId,

@@ -3,10 +3,12 @@ package db
 import (
 	"core/authz/proto/model"
 	"core/authz/rpc/internal/config"
+	"database/sql"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 type Repository struct {
+	RawConn          sqlx.SqlConn
 	MenuDao          model.MenuModel
 	RoleDao          model.RoleModel
 	ResourceDao      model.ResourceModel
@@ -17,14 +19,24 @@ type Repository struct {
 }
 
 func NewRepository(cfg config.Config) *Repository {
-	mysqlConn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
+	rawConn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
 	return &Repository{
-		MenuDao:          model.NewMenuModel(mysqlConn, cfg.Cache),
-		RoleDao:          model.NewRoleModel(mysqlConn, cfg.Cache),
-		ResourceDao:      model.NewResourceModel(mysqlConn, cfg.Cache),
-		UserRoleDao:      model.NewUserRoleRelModel(mysqlConn),
-		RoleMenuDao:      model.NewRoleMenuRelModel(mysqlConn),
-		RoleResourceDao:  model.NewRoleResourceRelModel(mysqlConn),
-		ResourceGroupDao: model.NewResourceGroupModel(mysqlConn),
+		RawConn:          rawConn,
+		MenuDao:          model.NewMenuModel(rawConn, cfg.Cache),
+		RoleDao:          model.NewRoleModel(rawConn, cfg.Cache),
+		ResourceDao:      model.NewResourceModel(rawConn, cfg.Cache),
+		UserRoleDao:      model.NewUserRoleRelModel(rawConn),
+		RoleMenuDao:      model.NewRoleMenuRelModel(rawConn),
+		RoleResourceDao:  model.NewRoleResourceRelModel(rawConn),
+		ResourceGroupDao: model.NewResourceGroupModel(rawConn),
 	}
+}
+
+func (r *Repository) RawDB() *sql.DB {
+	rawDB, err := r.RawConn.RawDB()
+	if err != nil {
+		panic(err)
+	}
+
+	return rawDB
 }

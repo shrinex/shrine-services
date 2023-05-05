@@ -8,15 +8,23 @@ import (
 )
 
 type Repository struct {
-	RawDB   *sql.DB
+	RawConn sqlx.SqlConn
 	ShopDao model.ShopModel
 }
 
 func NewRepository(cfg config.Config) *Repository {
-	conn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
-	rawDB, _ := conn.RawDB()
+	rawConn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
 	return &Repository{
-		RawDB:   rawDB,
-		ShopDao: model.NewShopModel(conn, cfg.Cache),
+		RawConn: rawConn,
+		ShopDao: model.NewShopModel(rawConn, cfg.Cache),
 	}
+}
+
+func (r *Repository) RawDB() *sql.DB {
+	rawDB, err := r.RawConn.RawDB()
+	if err != nil {
+		panic(err)
+	}
+
+	return rawDB
 }
