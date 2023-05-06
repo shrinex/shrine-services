@@ -10,6 +10,7 @@ var (
 	errAccountExistsDesc = "账号已存在"
 
 	errUserExists      = status.Error(codes.AlreadyExists, errUserExistsDesc)
+	errUserNotFound    = status.Error(codes.NotFound, "用户不存在")
 	errAccountExists   = status.Error(codes.AlreadyExists, errAccountExistsDesc)
 	errAccountNotFound = status.Error(codes.NotFound, "账号不存在")
 	errPasswdMismatch  = status.Error(codes.FailedPrecondition, "密码错误")

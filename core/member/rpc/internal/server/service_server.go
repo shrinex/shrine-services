@@ -22,38 +22,7 @@ func NewServiceServer(svcCtx *svc.ServiceContext) *ServiceServer {
 	}
 }
 
-// AddUser 添加用户
-func (s *ServiceServer) AddUser(ctx context.Context, in *pb.AddUserInput) (*pb.AddUserOutput, error) {
-	l := logic.NewAddUserLogic(ctx, s.svcCtx)
-	return l.AddUser(in)
-}
-
-// RemoveUser 删除用户
-func (s *ServiceServer) RemoveUser(ctx context.Context, in *pb.RemoveUserInput) (*pb.RemoveUserOutput, error) {
-	l := logic.NewRemoveUserLogic(ctx, s.svcCtx)
-	return l.RemoveUser(in)
-}
-
-// EditUser 编辑用户信息
-func (s *ServiceServer) EditUser(ctx context.Context, in *pb.EditUserInput) (*pb.EditUserOutput, error) {
-	l := logic.NewEditUserLogic(ctx, s.svcCtx)
-	return l.EditUser(in)
-}
-
-// GetUser 获取用户信息
-func (s *ServiceServer) GetUser(ctx context.Context, in *pb.GetUserInput) (*pb.GetUserOutput, error) {
-	l := logic.NewGetUserLogic(ctx, s.svcCtx)
-	return l.GetUser(in)
-}
-
-// PageUsers 分页获取用户列表
-func (s *ServiceServer) PageUsers(ctx context.Context, in *pb.PageUsersInput) (*pb.PageUsersOutput, error) {
-	l := logic.NewPageUsersLogic(ctx, s.svcCtx)
-	return l.PageUsers(in)
-}
-
-// UserExists 判断用户是否已存在
-func (s *ServiceServer) UserExists(ctx context.Context, in *pb.UserExistsInput) (*pb.UserExistsOutput, error) {
-	l := logic.NewUserExistsLogic(ctx, s.svcCtx)
-	return l.UserExists(in)
+func (s *ServiceServer) Hello(ctx context.Context, in *pb.Empty) (*pb.Empty, error) {
+	l := logic.NewHelloLogic(ctx, s.svcCtx)
+	return l.Hello(in)
 }

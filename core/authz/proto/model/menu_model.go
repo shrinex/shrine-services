@@ -43,7 +43,7 @@ func (m *customMenuModel) CountMenus(ctx context.Context, sysType int64) (int64,
 }
 
 func (m *customMenuModel) PageMenus(ctx context.Context, pageNo int64, pageSize int64, sysType int64) ([]*Menu, error) {
-	query, args := squirrel.Select("*").
+	query, args := squirrel.Select(menuRows).
 		From("menu").
 		Where("sys_type = ?", sysType).
 		OrderBy("weight desc").

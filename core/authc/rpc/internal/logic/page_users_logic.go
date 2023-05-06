@@ -7,8 +7,8 @@ import (
 	"shrine/std/utils/page"
 	"shrine/std/utils/slices"
 
-	"core/member/rpc/internal/svc"
-	"core/member/rpc/pb"
+	"core/authc/rpc/internal/svc"
+	"core/authc/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

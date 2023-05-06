@@ -51,3 +51,21 @@ func (s *ServiceServer) AddAdminAccountCancel(ctx context.Context, in *pb.AddAdm
 	l := logic.NewAddAdminAccountCancelLogic(ctx, s.svcCtx)
 	return l.AddAdminAccountCancel(in)
 }
+
+// EditUser 编辑用户信息
+func (s *ServiceServer) EditUser(ctx context.Context, in *pb.EditUserInput) (*pb.EditUserOutput, error) {
+	l := logic.NewEditUserLogic(ctx, s.svcCtx)
+	return l.EditUser(in)
+}
+
+// GetUser 获取用户信息
+func (s *ServiceServer) GetUser(ctx context.Context, in *pb.GetUserInput) (*pb.GetUserOutput, error) {
+	l := logic.NewGetUserLogic(ctx, s.svcCtx)
+	return l.GetUser(in)
+}
+
+// PageUsers 分页获取用户列表
+func (s *ServiceServer) PageUsers(ctx context.Context, in *pb.PageUsersInput) (*pb.PageUsersOutput, error) {
+	l := logic.NewPageUsersLogic(ctx, s.svcCtx)
+	return l.PageUsers(in)
+}

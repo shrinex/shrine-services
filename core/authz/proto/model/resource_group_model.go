@@ -42,7 +42,7 @@ func (m *customResourceGroupModel) CountResourceGroups(ctx context.Context, sysT
 }
 
 func (m *customResourceGroupModel) PageResourceGroups(ctx context.Context, pageNo int64, pageSize int64, sysType int64) ([]*ResourceGroup, error) {
-	query, args := squirrel.Select("*").
+	query, args := squirrel.Select(resourceGroupRows).
 		From("resource_group").
 		Where("sys_type = ?", sysType).
 		OrderBy("create_time desc").

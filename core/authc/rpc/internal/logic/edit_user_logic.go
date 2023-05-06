@@ -2,13 +2,14 @@ package logic
 
 import (
 	"context"
-	"core/member/proto/model"
-	"core/member/rpc/internal/svc"
-	"core/member/rpc/pb"
+	"core/authc/proto/model"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"core/authc/rpc/internal/svc"
+	"core/authc/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -41,12 +42,11 @@ func (l *EditUserLogic) EditUser(in *pb.EditUserInput) (*pb.EditUserOutput, erro
 
 	user := &model.User{
 		UserId:   exist.UserId,
-		ShopId:   in.GetShopId(),
+		ShopId:   exist.ShopId,
 		SysType:  exist.SysType,
 		Nickname: in.GetNickname(),
 		Avatar:   in.GetAvatar(),
 		Intro:    in.GetIntro(),
-		Active:   exist.Active,
 		Enabled:  in.GetEnabled(),
 	}
 
@@ -62,7 +62,7 @@ func (l *EditUserLogic) validate(in *pb.EditUserInput) (*model.User, error) {
 	exist, err := l.svcCtx.DB.UserDao.FindOne(l.ctx, in.GetUserId())
 	if err != nil {
 		if errors.Is(err, sqlx.ErrNotFound) {
-			return nil, errUserNotExists
+			return nil, errUserNotFound
 		}
 		return nil, err
 	}

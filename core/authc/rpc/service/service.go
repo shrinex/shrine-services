@@ -15,10 +15,17 @@ import (
 type (
 	AddAdminAccountInput  = pb.AddAdminAccountInput
 	AddAdminAccountOutput = pb.AddAdminAccountOutput
+	EditUserInput         = pb.EditUserInput
+	EditUserOutput        = pb.EditUserOutput
+	GetUserInput          = pb.GetUserInput
+	GetUserOutput         = pb.GetUserOutput
 	LoginInput            = pb.LoginInput
 	LoginOutput           = pb.LoginOutput
+	PageUsersInput        = pb.PageUsersInput
+	PageUsersOutput       = pb.PageUsersOutput
 	RegisterInput         = pb.RegisterInput
 	RegisterOutput        = pb.RegisterOutput
+	User                  = pb.User
 
 	Service interface {
 		// Login 用户登录
@@ -31,6 +38,12 @@ type (
 		AddAdminAccountConfirm(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error)
 		// AddAdminAccountCancel 添加商家端管理员用户回滚
 		AddAdminAccountCancel(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error)
+		// EditUser 编辑用户信息
+		EditUser(ctx context.Context, in *EditUserInput, opts ...grpc.CallOption) (*EditUserOutput, error)
+		// GetUser 获取用户信息
+		GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*GetUserOutput, error)
+		// PageUsers 分页获取用户列表
+		PageUsers(ctx context.Context, in *PageUsersInput, opts ...grpc.CallOption) (*PageUsersOutput, error)
 	}
 
 	defaultService struct {
@@ -72,4 +85,22 @@ func (m *defaultService) AddAdminAccountConfirm(ctx context.Context, in *AddAdmi
 func (m *defaultService) AddAdminAccountCancel(ctx context.Context, in *AddAdminAccountInput, opts ...grpc.CallOption) (*AddAdminAccountOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
 	return client.AddAdminAccountCancel(ctx, in, opts...)
+}
+
+// EditUser 编辑用户信息
+func (m *defaultService) EditUser(ctx context.Context, in *EditUserInput, opts ...grpc.CallOption) (*EditUserOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.EditUser(ctx, in, opts...)
+}
+
+// GetUser 获取用户信息
+func (m *defaultService) GetUser(ctx context.Context, in *GetUserInput, opts ...grpc.CallOption) (*GetUserOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.GetUser(ctx, in, opts...)
+}
+
+// PageUsers 分页获取用户列表
+func (m *defaultService) PageUsers(ctx context.Context, in *PageUsersInput, opts ...grpc.CallOption) (*PageUsersOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.PageUsers(ctx, in, opts...)
 }
