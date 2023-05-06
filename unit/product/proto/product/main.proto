@@ -1,0 +1,48 @@
+// grpcui -plaintext localhost:9005
+
+// mkdir ./rpc/pb
+// protoc -I "./proto/product" -I "../../std/proto" --go_out="paths=source_relative:./rpc/pb" --validate_out="lang=go,paths=source_relative:./rpc/pb" main.proto
+// goctl rpc protoc "./proto/product/main.proto" --go_out=./rpc --go-grpc_out=./rpc --zrpc_out=./rpc --style=go_zero -I . -I "../../std/proto"
+
+syntax = "proto3";
+
+package shrine.product;
+
+option go_package = "./pb";
+
+import "validate/validate.proto";
+
+message Category {
+  int64 categoryId = 1; // 分类ID
+  int64 parentId = 2; // 父ID
+  string name = 3; // 分类名称
+  string remark = 4; // 分类描述
+  string icon = 5; // 分类图标
+  int64 level = 6; // 层级,从1开始
+  int64 status = 7; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 8; // 排序
+  int64 updateTime = 9; // 更新时间
+}
+
+message CategoryNode {
+  int64 categoryId = 1; // 分类ID
+  int64 parentId = 2; // 父ID
+  string name = 3; // 分类名称
+  string remark = 4; // 分类描述
+  string icon = 5; // 分类图标
+  int64 level = 6; // 层级,从1开始
+  repeated CategoryNode children = 7;
+}
+
+message ListCategoriesInput {
+  string name = 1 [(validate.rules).string.ignore_empty = true, (validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+}
+
+message ListCategoriesOutput {
+  repeated CategoryNode categories = 1;
+}
+
+service Service {
+  // ListCategories 查询所有分类
+  rpc ListCategories(ListCategoriesInput) returns (ListCategoriesOutput);
+}

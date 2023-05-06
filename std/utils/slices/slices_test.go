@@ -105,7 +105,7 @@ func TestGroupingBy(t *testing.T) {
 	in := []int{1, 2, 2, 3}
 	out := GroupingBy(in, func(e int) string {
 		return fmt.Sprint(e)
-	}, func(e []int) []int {
+	}, func(e int) int {
 		return e
 	})
 

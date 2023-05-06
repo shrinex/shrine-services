@@ -199,26 +199,25 @@ func Max[E any](s []E, comparator func(E, E) int) (result E, ok bool) {
 
 // GroupingBy implementing a "group by" operation on input elements of type E
 // grouping elements according to a classification function, and returning the results in a map
-func GroupingBy[E any, K comparable, V any](s []E, classifier func(E) K, valueMapper func([]E) V) map[K]V {
+func GroupingBy[E any, K comparable, V any](s []E, classifier func(E) K, valueMapper func(E) V) map[K][]V {
 	if len(s) == 0 {
-		return make(map[K]V)
+		return make(map[K][]V)
 	}
 
-	group := make(map[K][]E)
+	result := make(map[K][]V)
 	for _, e := range s {
 		key := classifier(e)
-		slice, ok := group[key]
+		slice, ok := result[key]
 		if !ok {
-			slice = make([]E, 0)
+			slice = make([]V, 0)
 		}
-		slice = append(slice, e)
-		group[key] = slice
-	}
-
-	result := make(map[K]V)
-	for key, value := range group {
-		result[key] = valueMapper(value)
+		slice = append(slice, valueMapper(e))
+		result[key] = slice
 	}
 
 	return result
+}
+
+func Identity[E any](e E) E {
+	return e
 }

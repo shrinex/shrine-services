@@ -28,6 +28,7 @@ const (
 	Authz
 	Merchant
 	Dtm
+	Product
 )
 
 var (
