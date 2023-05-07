@@ -142,3 +142,34 @@ func TestNestedGroupingBy(t *testing.T) {
 	assert.EqualValues(t, map[string]int{"2": 2}, out["2"])
 	assert.EqualValues(t, map[string]int{"3": 3}, out["3"])
 }
+
+func TestMutateEach(t *testing.T) {
+	in := []int{1, 2, 3}
+	MutateEach(in, func(i *int, stop *bool) {
+		*i = *i + 1
+	})
+
+	assert.EqualValues(t, []int{2, 3, 4}, in)
+}
+
+func TestForEach(t *testing.T) {
+	in := []int{1, 2, 3}
+	ForEach(in, func(i int, stop *bool) {
+		i = i + 1
+	})
+
+	assert.EqualValues(t, []int{1, 2, 3}, in)
+}
+
+func TestMutateEachWithStop(t *testing.T) {
+	in := []int{1, 2, 3}
+	MutateEach(in, func(i *int, stop *bool) {
+		if *i == 2 {
+			*stop = true
+			return
+		}
+		*i = *i + 1
+	})
+
+	assert.EqualValues(t, []int{2, 2, 3}, in)
+}

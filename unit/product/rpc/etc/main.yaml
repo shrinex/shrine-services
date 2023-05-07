@@ -1,5 +1,5 @@
 Name: shrine.product.rpc
-ListenOn: 0.0.0.0:9001
+ListenOn: 0.0.0.0:9005
 Mode: dev
 
 Log:

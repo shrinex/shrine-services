@@ -45,3 +45,21 @@ func (s *ServiceServer) RemoveCategory(ctx context.Context, in *pb.RemoveCategor
 	l := logic.NewRemoveCategoryLogic(ctx, s.svcCtx)
 	return l.RemoveCategory(in)
 }
+
+// AddBrand 添加品牌
+func (s *ServiceServer) AddBrand(ctx context.Context, in *pb.AddBrandInput) (*pb.AddBrandOutput, error) {
+	l := logic.NewAddBrandLogic(ctx, s.svcCtx)
+	return l.AddBrand(in)
+}
+
+// EditBrand 编辑品牌
+func (s *ServiceServer) EditBrand(ctx context.Context, in *pb.EditBrandInput) (*pb.EditBrandOutput, error) {
+	l := logic.NewEditBrandLogic(ctx, s.svcCtx)
+	return l.EditBrand(in)
+}
+
+// RemoveBrand 删除品牌
+func (s *ServiceServer) RemoveBrand(ctx context.Context, in *pb.RemoveBrandInput) (*pb.RemoveBrandOutput, error) {
+	l := logic.NewRemoveBrandLogic(ctx, s.svcCtx)
+	return l.RemoveBrand(in)
+}

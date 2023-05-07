@@ -34,8 +34,34 @@ message CategoryNode {
   repeated CategoryNode children = 7;
 }
 
+message Brand {
+  int64 brandId = 1; // 品牌ID
+  string name = 2; // 品牌名称
+  string remark = 3; // 品牌描述
+  string logo = 4; // 品牌图标
+  int64 status = 5; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 6; // 排序
+  int64 updateTime = 7; // 更新时间
+}
+
+message Attr {
+  int64 attrId = 1; // 属性ID
+  string name = 2; // 属性名称
+  string remark = 3; // 属性描述
+  int64 type = 4; // 类型:0-规格,1-属性
+  int64 customizable = 5; // 属性值是否支持自定义:0-否,1-是
+  int64 updateTime = 6; // 更新时间
+}
+
+message AttrValue {
+  int64 attrValueId = 1; // 属性值ID
+  int64 attrId = 2; // 属性ID
+  string value = 3; // 属性值
+  int64 updateTime = 4; // 更新时间
+}
+
 message ListCategoriesInput {
-  string name = 1 [(validate.rules).string.ignore_empty = true, (validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string name = 1 [(validate.rules).string = {ignore_empty: true, pattern: "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"}]; // 名称
 }
 
 message ListCategoriesOutput {
@@ -74,6 +100,39 @@ message RemoveCategoryInput {
 message RemoveCategoryOutput {
 }
 
+message AddBrandInput {
+  string name = 1 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string remark = 2 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,64}$"]; // 备注
+  string logo = 3 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 图标
+  int64 status = 4 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 5 [(validate.rules).int64.gte = 0]; // 排序
+  repeated int64 categoryIds = 6 [(validate.rules).repeated = {unique: true, items: {int64 : {gte: 0}}}]; // 所属分类
+}
+
+message AddBrandOutput {
+  int64 brandId = 1;
+}
+
+message EditBrandInput {
+  int64 brandId = 1 [(validate.rules).int64.gte = 0]; // 品牌ID
+  string name = 2 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string remark = 3 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,64}$"]; // 备注
+  string logo = 4 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 图标
+  int64 status = 5 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 6 [(validate.rules).int64.gte = 0]; // 排序
+  repeated int64 categoryIds = 7 [(validate.rules).repeated = {unique: true, ignore_empty: true, items: {int64 : {gte: 0}}}]; // 所属分类
+}
+
+message EditBrandOutput {
+}
+
+message RemoveBrandInput {
+  int64 brandId = 1 [(validate.rules).int64.gte = 0]; // 品牌ID
+}
+
+message RemoveBrandOutput {
+}
+
 service Service {
   // ListCategories 查询所有分类
   rpc ListCategories(ListCategoriesInput) returns (ListCategoriesOutput);
@@ -86,4 +145,13 @@ service Service {
 
   // RemoveCategory 删除分类
   rpc RemoveCategory(RemoveCategoryInput) returns (RemoveCategoryOutput);
+
+  // AddBrand 添加品牌
+  rpc AddBrand(AddBrandInput) returns (AddBrandOutput);
+
+  // EditBrand 编辑品牌
+  rpc EditBrand(EditBrandInput) returns (EditBrandOutput);
+
+  // RemoveBrand 删除品牌
+  rpc RemoveBrand(RemoveBrandInput) returns (RemoveBrandOutput);
 }

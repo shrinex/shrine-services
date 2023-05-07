@@ -13,14 +13,23 @@ import (
 )
 
 type (
+	AddBrandInput        = pb.AddBrandInput
+	AddBrandOutput       = pb.AddBrandOutput
 	AddCategoryInput     = pb.AddCategoryInput
 	AddCategoryOutput    = pb.AddCategoryOutput
+	Attr                 = pb.Attr
+	AttrValue            = pb.AttrValue
+	Brand                = pb.Brand
 	Category             = pb.Category
 	CategoryNode         = pb.CategoryNode
+	EditBrandInput       = pb.EditBrandInput
+	EditBrandOutput      = pb.EditBrandOutput
 	EditCategoryInput    = pb.EditCategoryInput
 	EditCategoryOutput   = pb.EditCategoryOutput
 	ListCategoriesInput  = pb.ListCategoriesInput
 	ListCategoriesOutput = pb.ListCategoriesOutput
+	RemoveBrandInput     = pb.RemoveBrandInput
+	RemoveBrandOutput    = pb.RemoveBrandOutput
 	RemoveCategoryInput  = pb.RemoveCategoryInput
 	RemoveCategoryOutput = pb.RemoveCategoryOutput
 
@@ -33,6 +42,12 @@ type (
 		EditCategory(ctx context.Context, in *EditCategoryInput, opts ...grpc.CallOption) (*EditCategoryOutput, error)
 		// RemoveCategory 删除分类
 		RemoveCategory(ctx context.Context, in *RemoveCategoryInput, opts ...grpc.CallOption) (*RemoveCategoryOutput, error)
+		// AddBrand 添加品牌
+		AddBrand(ctx context.Context, in *AddBrandInput, opts ...grpc.CallOption) (*AddBrandOutput, error)
+		// EditBrand 编辑品牌
+		EditBrand(ctx context.Context, in *EditBrandInput, opts ...grpc.CallOption) (*EditBrandOutput, error)
+		// RemoveBrand 删除品牌
+		RemoveBrand(ctx context.Context, in *RemoveBrandInput, opts ...grpc.CallOption) (*RemoveBrandOutput, error)
 	}
 
 	defaultService struct {
@@ -68,4 +83,22 @@ func (m *defaultService) EditCategory(ctx context.Context, in *EditCategoryInput
 func (m *defaultService) RemoveCategory(ctx context.Context, in *RemoveCategoryInput, opts ...grpc.CallOption) (*RemoveCategoryOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
 	return client.RemoveCategory(ctx, in, opts...)
+}
+
+// AddBrand 添加品牌
+func (m *defaultService) AddBrand(ctx context.Context, in *AddBrandInput, opts ...grpc.CallOption) (*AddBrandOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.AddBrand(ctx, in, opts...)
+}
+
+// EditBrand 编辑品牌
+func (m *defaultService) EditBrand(ctx context.Context, in *EditBrandInput, opts ...grpc.CallOption) (*EditBrandOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.EditBrand(ctx, in, opts...)
+}
+
+// RemoveBrand 删除品牌
+func (m *defaultService) RemoveBrand(ctx context.Context, in *RemoveBrandInput, opts ...grpc.CallOption) (*RemoveBrandOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.RemoveBrand(ctx, in, opts...)
 }

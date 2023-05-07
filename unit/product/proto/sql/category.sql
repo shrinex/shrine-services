@@ -17,5 +17,6 @@ create table category
     create_time datetime     not null default current_timestamp comment '创建时间',
     update_time datetime     not null default current_timestamp on update current_timestamp comment '更新时间',
     primary key (category_id),
+    unique key uk_name (name),
     key idx_parentid (parent_id)
 ) comment '产品分类表';

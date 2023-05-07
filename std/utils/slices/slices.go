@@ -30,6 +30,28 @@ func Normalize[E any](s []E) []any {
 	return result
 }
 
+// ForEach iterate over the input slice’s elements
+func ForEach[E any](s []E, fn func(E, *bool)) {
+	stop := false
+	for _, e := range s {
+		fn(e, &stop)
+		if stop {
+			break
+		}
+	}
+}
+
+// MutateEach iterate over the input slice’s elements
+func MutateEach[E any](s []E, fn func(*E, *bool)) {
+	stop := false
+	for i := 0; i < len(s); i++ {
+		fn(&s[i], &stop)
+		if stop {
+			break
+		}
+	}
+}
+
 // Map returns a slice containing the results of mapping the given
 // closure over the input slice’s elements
 func Map[E, T any](s []E, transform func(E) T) []T {

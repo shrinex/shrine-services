@@ -8,15 +8,25 @@ import (
 )
 
 type Repository struct {
-	RawConn     sqlx.SqlConn
-	CategoryDao model.CategoryModel
+	RawConn          sqlx.SqlConn
+	CategoryDao      model.CategoryModel
+	BrandDao         model.BrandModel
+	BrandCategoryDao model.BrandCategoryRelModel
+	AttrDao          model.AttrModel
+	AttrValueDao     model.AttrValueModel
+	AttrCategoryDao  model.AttrCategoryRelModel
 }
 
 func NewRepository(cfg config.Config) *Repository {
 	rawConn := sqlx.NewMysql(cfg.MySQL.FormatDSN())
 	return &Repository{
-		RawConn:     rawConn,
-		CategoryDao: model.NewCategoryModel(rawConn, cfg.Cache),
+		RawConn:          rawConn,
+		CategoryDao:      model.NewCategoryModel(rawConn, cfg.Cache),
+		BrandDao:         model.NewBrandModel(rawConn, cfg.Cache),
+		BrandCategoryDao: model.NewBrandCategoryRelModel(rawConn),
+		AttrDao:          model.NewAttrModel(rawConn, cfg.Cache),
+		AttrValueDao:     model.NewAttrValueModel(rawConn, cfg.Cache),
+		AttrCategoryDao:  model.NewAttrCategoryRelModel(rawConn),
 	}
 }
 

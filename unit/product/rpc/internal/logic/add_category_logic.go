@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"shrine/std/utils/sqle"
 	"unit/product/proto/model"
 
 	"unit/product/rpc/internal/svc"
@@ -33,22 +34,9 @@ func (l *AddCategoryLogic) AddCategory(in *pb.AddCategoryInput) (*pb.AddCategory
 		return nil, err
 	}
 
-	level := int64(1)
-	if in.GetParentId() != rootCategoryId {
-		parent, err := l.svcCtx.DB.CategoryDao.FindOne(l.ctx, in.GetParentId())
-		if errors.Is(err, sqlx.ErrNotFound) {
-			return nil, errParentCategoryNotFound
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		if parent.Level >= maxCategoryLevel {
-			return nil, errCategoryLevelOverflow
-		}
-
-		level = parent.Level + 1
+	level, err := l.validate(in)
+	if err != nil {
+		return nil, err
 	}
 
 	catId := l.svcCtx.Leaf.MustNextID()
@@ -64,10 +52,43 @@ func (l *AddCategoryLogic) AddCategory(in *pb.AddCategoryInput) (*pb.AddCategory
 	})
 
 	if err != nil {
+		if sqle.Is(err, sqle.DuplicateEntry) {
+			return nil, errCategoryExists
+		}
 		return nil, err
 	}
 
 	return &pb.AddCategoryOutput{
 		CategoryId: catId,
 	}, nil
+}
+
+func (l *AddCategoryLogic) validate(in *pb.AddCategoryInput) (int64, error) {
+	maybe, err := l.svcCtx.DB.CategoryDao.FindOneByName(l.ctx, in.GetName())
+	if err != nil && !errors.Is(err, sqlx.ErrNotFound) {
+		return 0, err
+	}
+
+	if maybe != nil {
+		return 0, errCategoryExists
+	}
+
+	if in.GetParentId() == rootCategoryId {
+		return 1, nil
+	}
+
+	parent, err := l.svcCtx.DB.CategoryDao.FindOne(l.ctx, in.GetParentId())
+	if errors.Is(err, sqlx.ErrNotFound) {
+		return 0, errParentCategoryNotFound
+	}
+
+	if err != nil {
+		return 0, err
+	}
+
+	if parent.Level >= maxCategoryLevel {
+		return 0, errCategoryLevelOverflow
+	}
+
+	return parent.Level + 1, nil
 }
