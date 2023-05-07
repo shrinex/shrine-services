@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -17,6 +19,7 @@ type (
 	CategoryModel interface {
 		categoryModel
 		ListCategories(context.Context, string) ([]*Category, error)
+		UpdateStatus(context.Context, int64, int64) error
 	}
 
 	customCategoryModel struct {
@@ -41,4 +44,13 @@ func (m *customCategoryModel) ListCategories(ctx context.Context, name string) (
 	resp := slices.Empty[*Category]()
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
 	return resp, err
+}
+
+func (m *customCategoryModel) UpdateStatus(ctx context.Context, catId, status int64) error {
+	categoryCategoryIdKey := fmt.Sprintf("%s%v", cacheCategoryCategoryIdPrefix, catId)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `status` = ? where `category_id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, status, catId)
+	}, categoryCategoryIdKey)
+	return err
 }

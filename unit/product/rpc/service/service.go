@@ -13,14 +13,26 @@ import (
 )
 
 type (
+	AddCategoryInput     = pb.AddCategoryInput
+	AddCategoryOutput    = pb.AddCategoryOutput
 	Category             = pb.Category
 	CategoryNode         = pb.CategoryNode
+	EditCategoryInput    = pb.EditCategoryInput
+	EditCategoryOutput   = pb.EditCategoryOutput
 	ListCategoriesInput  = pb.ListCategoriesInput
 	ListCategoriesOutput = pb.ListCategoriesOutput
+	RemoveCategoryInput  = pb.RemoveCategoryInput
+	RemoveCategoryOutput = pb.RemoveCategoryOutput
 
 	Service interface {
 		// ListCategories 查询所有分类
 		ListCategories(ctx context.Context, in *ListCategoriesInput, opts ...grpc.CallOption) (*ListCategoriesOutput, error)
+		// AddCategory 添加分类
+		AddCategory(ctx context.Context, in *AddCategoryInput, opts ...grpc.CallOption) (*AddCategoryOutput, error)
+		// EditCategory 编辑分类
+		EditCategory(ctx context.Context, in *EditCategoryInput, opts ...grpc.CallOption) (*EditCategoryOutput, error)
+		// RemoveCategory 删除分类
+		RemoveCategory(ctx context.Context, in *RemoveCategoryInput, opts ...grpc.CallOption) (*RemoveCategoryOutput, error)
 	}
 
 	defaultService struct {
@@ -38,4 +50,22 @@ func NewService(cli zrpc.Client) Service {
 func (m *defaultService) ListCategories(ctx context.Context, in *ListCategoriesInput, opts ...grpc.CallOption) (*ListCategoriesOutput, error) {
 	client := pb.NewServiceClient(m.cli.Conn())
 	return client.ListCategories(ctx, in, opts...)
+}
+
+// AddCategory 添加分类
+func (m *defaultService) AddCategory(ctx context.Context, in *AddCategoryInput, opts ...grpc.CallOption) (*AddCategoryOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.AddCategory(ctx, in, opts...)
+}
+
+// EditCategory 编辑分类
+func (m *defaultService) EditCategory(ctx context.Context, in *EditCategoryInput, opts ...grpc.CallOption) (*EditCategoryOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.EditCategory(ctx, in, opts...)
+}
+
+// RemoveCategory 删除分类
+func (m *defaultService) RemoveCategory(ctx context.Context, in *RemoveCategoryInput, opts ...grpc.CallOption) (*RemoveCategoryOutput, error) {
+	client := pb.NewServiceClient(m.cli.Conn())
+	return client.RemoveCategory(ctx, in, opts...)
 }

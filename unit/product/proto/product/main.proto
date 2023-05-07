@@ -42,7 +42,48 @@ message ListCategoriesOutput {
   repeated CategoryNode categories = 1;
 }
 
+message AddCategoryInput {
+  int64 parentId = 1 [(validate.rules).int64.gte = 0]; // 父ID
+  string name = 2 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string remark = 3 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
+  string icon = 4 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 分类图标
+  int64 status = 5 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 6 [(validate.rules).int64.gte = 0]; // 排序
+}
+
+message AddCategoryOutput {
+  int64 categoryId = 1; // 分类ID
+}
+
+message EditCategoryInput {
+  int64 categoryId = 1 [(validate.rules).int64.gte = 0]; // 分类ID
+  string name = 2 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string remark = 3 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
+  string icon = 4 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 分类图标
+  int64 status = 5 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 6 [(validate.rules).int64.gte = 0]; // 排序
+}
+
+message EditCategoryOutput {
+}
+
+message RemoveCategoryInput {
+  int64 categoryId = 1 [(validate.rules).int64.gte = 0]; // 分类ID
+}
+
+message RemoveCategoryOutput {
+}
+
 service Service {
   // ListCategories 查询所有分类
   rpc ListCategories(ListCategoriesInput) returns (ListCategoriesOutput);
+
+  // AddCategory 添加分类
+  rpc AddCategory(AddCategoryInput) returns (AddCategoryOutput);
+
+  // EditCategory 编辑分类
+  rpc EditCategory(EditCategoryInput) returns (EditCategoryOutput);
+
+  // RemoveCategory 删除分类
+  rpc RemoveCategory(RemoveCategoryInput) returns (RemoveCategoryOutput);
 }

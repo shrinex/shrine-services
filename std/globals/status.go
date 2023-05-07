@@ -5,9 +5,10 @@ const (
 	FlagFalse = 0
 	FlagTrue  = 1
 
-	StatusEnabled  = FlagTrue
-	StatusDisabled = FlagFalse
+	StatusDisabled = 0
+	StatusEnabled  = 1
+	StatusRemoved  = 2
 
-	StatusActive   = FlagTrue
-	StatusInactive = FlagFalse
+	StatusInactive = 0
+	StatusActive   = 1
 )

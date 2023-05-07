@@ -27,3 +27,21 @@ func (s *ServiceServer) ListCategories(ctx context.Context, in *pb.ListCategorie
 	l := logic.NewListCategoriesLogic(ctx, s.svcCtx)
 	return l.ListCategories(in)
 }
+
+// AddCategory 添加分类
+func (s *ServiceServer) AddCategory(ctx context.Context, in *pb.AddCategoryInput) (*pb.AddCategoryOutput, error) {
+	l := logic.NewAddCategoryLogic(ctx, s.svcCtx)
+	return l.AddCategory(in)
+}
+
+// EditCategory 编辑分类
+func (s *ServiceServer) EditCategory(ctx context.Context, in *pb.EditCategoryInput) (*pb.EditCategoryOutput, error) {
+	l := logic.NewEditCategoryLogic(ctx, s.svcCtx)
+	return l.EditCategory(in)
+}
+
+// RemoveCategory 删除分类
+func (s *ServiceServer) RemoveCategory(ctx context.Context, in *pb.RemoveCategoryInput) (*pb.RemoveCategoryOutput, error) {
+	l := logic.NewRemoveCategoryLogic(ctx, s.svcCtx)
+	return l.RemoveCategory(in)
+}
