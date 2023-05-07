@@ -193,7 +193,7 @@ func AllMatch[E any](s []E, predicate func(E) bool) bool {
 // NonMatch returns whether no elements of the slice match the provided predicate
 func NonMatch[E any](s []E, predicate func(E) bool) bool {
 	if len(s) == 0 {
-		return false
+		return true
 	}
 
 	for _, e := range s {

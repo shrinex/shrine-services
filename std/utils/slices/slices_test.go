@@ -34,6 +34,22 @@ func TestForEach(t *testing.T) {
 	assert.EqualValues(t, []int{2, 3, 4}, out)
 }
 
+func TestForEachStop(t *testing.T) {
+	in := []int{1, 2, 3}
+	var out []int
+	ForEach(in, func(i int, stop *bool) {
+		if i == 3 {
+			*stop = true
+			return
+		}
+		i = i + 3
+		out = append(out, i)
+	})
+
+	assert.EqualValues(t, []int{1, 2, 3}, in)
+	assert.EqualValues(t, []int{4, 5}, out)
+}
+
 func TestMutateEach(t *testing.T) {
 	in := []int{1, 2, 3}
 	MutateEach(in, func(i *int, stop *bool) {
@@ -94,6 +110,15 @@ func TestFilter(t *testing.T) {
 
 	assert.Equal(t, 1, len(out))
 	assert.Equal(t, 3, out[0])
+}
+
+func TestReduceWithEmptySlice(t *testing.T) {
+	var in []int
+	out := Reduce(in, 1, func(r int, e int) int {
+		return r + e
+	})
+
+	assert.Equal(t, 1, out)
 }
 
 func TestReduce(t *testing.T) {
@@ -195,6 +220,17 @@ func TestNestedGroupingBy(t *testing.T) {
 	assert.EqualValues(t, map[string]int{"3": 3}, out["3"])
 }
 
+func TestAnyMatchWithEmptySlice(t *testing.T) {
+	var in []int
+
+	assert.False(t, AnyMatch(in, func(e int) bool {
+		return e < 0
+	}))
+	assert.False(t, AnyMatch(in, func(e int) bool {
+		return e > 0
+	}))
+}
+
 func TestAnyMatch(t *testing.T) {
 	in := []int{1, 2, 2, 3}
 
@@ -203,6 +239,17 @@ func TestAnyMatch(t *testing.T) {
 	}))
 	assert.False(t, AnyMatch(in, func(e int) bool {
 		return e == 4
+	}))
+}
+
+func TestAllMatchWithEmptySlice(t *testing.T) {
+	var in []int
+
+	assert.False(t, AllMatch(in, func(e int) bool {
+		return e < 0
+	}))
+	assert.False(t, AllMatch(in, func(e int) bool {
+		return e > 0
 	}))
 }
 
@@ -217,6 +264,17 @@ func TestAllMatch(t *testing.T) {
 	}))
 	assert.False(t, AllMatch(in, func(e int) bool {
 		return e > 1
+	}))
+}
+
+func TestNonMatchWithEmptySlice(t *testing.T) {
+	var in []int
+
+	assert.True(t, NonMatch(in, func(e int) bool {
+		return e < 0
+	}))
+	assert.True(t, NonMatch(in, func(e int) bool {
+		return e > 0
 	}))
 }
 
@@ -245,7 +303,7 @@ func TestMinWithEmptySlice(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
-	in := []int{1, 2, 3}
+	in := []int{3, 2, 1}
 
 	min, ok := Min(in, func(lhs int, rhs int) int {
 		return lhs - rhs
@@ -265,7 +323,7 @@ func TestMaxWithEmptySlice(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	in := []int{1, 2, 3}
+	in := []int{1, 3, 2}
 
 	max, ok := Max(in, func(lhs int, rhs int) int {
 		return lhs - rhs
