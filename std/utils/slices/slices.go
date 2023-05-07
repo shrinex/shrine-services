@@ -91,16 +91,36 @@ func Reduce[E, T any](s []E, initialResult T, nextPartialResult func(T, E) T) T 
 }
 
 // AsMap transforms slice into map
-func AsMap[E any, K comparable, V any](s []E, keyMapper func(E) K, valueMapper func(E) V) map[K]V {
+func AsMap[E any, K comparable](s []E, keyer func(E) K) map[K]E {
+	return AsMapValuer(s, keyer, Identity[E])
+}
+
+func AsMapMerger[E any, K comparable](s []E, keyer func(E) K, merger func(E, E) E) map[K]E {
+	return AsMapValuerMerger(s, keyer, Identity[E], merger)
+}
+
+// AsMapValuer transforms slice into map
+func AsMapValuer[E, V any, K comparable](s []E, keyer func(E) K, valuer func(E) V) map[K]V {
+	return AsMapValuerMerger(s, keyer, valuer, func(lhs V, rhs V) V {
+		return rhs
+	})
+}
+
+// AsMapValuerMerger transforms slice into map
+func AsMapValuerMerger[E, V any, K comparable](s []E, keyer func(E) K, valuer func(E) V, merger func(V, V) V) map[K]V {
 	return Collect[E, map[K]V](s, make(map[K]V), func(m *map[K]V, e E) {
-		(*m)[keyMapper(e)] = valueMapper(e)
+		if v, ok := (*m)[keyer(e)]; ok {
+			(*m)[keyer(e)] = merger(v, valuer(e))
+		} else {
+			(*m)[keyer(e)] = valuer(e)
+		}
 	})
 }
 
 // AsSet transforms slice into set
-func AsSet[E any, K comparable](s []E, keyMapper func(E) K) map[K]struct{} {
-	return Collect[E, map[K]struct{}](s, make(map[K]struct{}), func(m *map[K]struct{}, e E) {
-		(*m)[keyMapper(e)] = struct{}{}
+func AsSet[E any, K comparable](s []E, keyer func(E) K) map[K]struct{} {
+	return AsMapValuer(s, keyer, func(e E) struct{} {
+		return struct{}{}
 	})
 }
 
@@ -199,11 +219,13 @@ func Max[E any](s []E, comparator func(E, E) int) (result E, ok bool) {
 
 // GroupingBy implementing a "group by" operation on input elements of type E
 // grouping elements according to a classification function, and returning the results in a map
-func GroupingBy[E any, K comparable, V any](s []E, classifier func(E) K, valueMapper func(E) V) map[K][]V {
-	if len(s) == 0 {
-		return make(map[K][]V)
-	}
+func GroupingBy[E any, K comparable](s []E, classifier func(E) K) map[K][]E {
+	return GroupingByValuer(s, classifier, Identity[E])
+}
 
+// GroupingByValuer implementing a "group by" operation on input elements of type E
+// grouping elements according to a classification function, and returning the results in a map
+func GroupingByValuer[E, V any, K comparable](s []E, classifier func(E) K, valuer func(E) V) map[K][]V {
 	result := make(map[K][]V)
 	for _, e := range s {
 		key := classifier(e)
@@ -211,8 +233,34 @@ func GroupingBy[E any, K comparable, V any](s []E, classifier func(E) K, valueMa
 		if !ok {
 			slice = make([]V, 0)
 		}
-		slice = append(slice, valueMapper(e))
+		slice = append(slice, valuer(e))
 		result[key] = slice
+	}
+
+	return result
+}
+
+// NestedGroupingBy implementing a "group by" operation on input elements of type E
+// grouping elements according to a classification function, and returning the results in a map
+func NestedGroupingBy[E, V any, K comparable](s []E, classifier func(E) K, valuer func([]E) V) map[K]V {
+	if len(s) == 0 {
+		return make(map[K]V)
+	}
+
+	group := make(map[K][]E)
+	for _, e := range s {
+		key := classifier(e)
+		slice, ok := group[key]
+		if !ok {
+			slice = make([]E, 0)
+		}
+		slice = append(slice, e)
+		group[key] = slice
+	}
+
+	result := make(map[K]V)
+	for key, value := range group {
+		result[key] = valuer(value)
 	}
 
 	return result

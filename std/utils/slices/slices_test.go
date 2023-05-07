@@ -71,7 +71,7 @@ func TestReduce(t *testing.T) {
 
 func TestAsMap(t *testing.T) {
 	in := []int{1, 2, 3}
-	out := AsMap(in, func(e int) string {
+	out := AsMapValuer(in, func(e int) string {
 		return fmt.Sprint(e)
 
 	}, func(e int) int {
@@ -87,7 +87,7 @@ func TestAsMap(t *testing.T) {
 func TestAsMapConflict(t *testing.T) {
 	step := 0
 	in := []int{1, 2, 2, 3}
-	out := AsMap(in, func(e int) string {
+	out := AsMapValuer(in, func(e int) string {
 		return fmt.Sprint(e)
 
 	}, func(e int) int {
@@ -105,12 +105,40 @@ func TestGroupingBy(t *testing.T) {
 	in := []int{1, 2, 2, 3}
 	out := GroupingBy(in, func(e int) string {
 		return fmt.Sprint(e)
-	}, func(e int) int {
-		return e
 	})
 
 	assert.Equal(t, 3, len(out))
 	assert.EqualValues(t, []int{1}, out["1"])
 	assert.EqualValues(t, []int{2, 2}, out["2"])
 	assert.EqualValues(t, []int{3}, out["3"])
+}
+
+func TestGroupingByValuer(t *testing.T) {
+	in := []int{1, 2, 2, 3}
+	out := GroupingByValuer(in, func(e int) string {
+		return fmt.Sprint(e)
+	}, func(e int) int {
+		return e + e
+	})
+
+	assert.Equal(t, 3, len(out))
+	assert.EqualValues(t, []int{2}, out["1"])
+	assert.EqualValues(t, []int{4, 4}, out["2"])
+	assert.EqualValues(t, []int{6}, out["3"])
+}
+
+func TestNestedGroupingBy(t *testing.T) {
+	in := []int{1, 2, 2, 3}
+	out := NestedGroupingBy(in, func(e int) string {
+		return fmt.Sprint(e)
+	}, func(s []int) map[string]int {
+		return AsMap(s, func(e int) string {
+			return fmt.Sprint(e)
+		})
+	})
+
+	assert.Equal(t, 3, len(out))
+	assert.EqualValues(t, map[string]int{"1": 1}, out["1"])
+	assert.EqualValues(t, map[string]int{"2": 2}, out["2"])
+	assert.EqualValues(t, map[string]int{"3": 3}, out["3"])
 }

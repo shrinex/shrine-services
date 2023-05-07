@@ -46,18 +46,19 @@ func (l *ListCategoriesLogic) ListCategories(in *pb.ListCategoriesInput) (*pb.Li
 func (l *ListCategoriesLogic) treeify(categories []*model.Category) []*pb.CategoryNode {
 	nodes := slices.Map(categories, func(e *model.Category) (ret *pb.CategoryNode) {
 		ret = new(pb.CategoryNode)
-		ret.Children = []*pb.CategoryNode{}
 		_ = copier.Copy(ret, e)
 		return
 	})
 
 	lookup := slices.GroupingBy(nodes, func(e *pb.CategoryNode) int64 {
 		return e.ParentId
-	}, slices.Identity[*pb.CategoryNode])
+	})
 
 	for _, e := range nodes {
 		if children, ok := lookup[e.GetCategoryId()]; ok {
 			e.Children = children
+		} else {
+			e.Children = []*pb.CategoryNode{}
 		}
 	}
 
