@@ -1,0 +1,19 @@
+// grpcui -plaintext localhost:9003
+
+// mkdir ./core/member/rpc/pb
+// protoc -I "./core/member/proto/rpc" -I "./std/proto" --go_out="paths=source_relative:./core/member/rpc/pb" --validate_out="lang=go,paths=source_relative:./core/member/rpc/pb" main.proto
+// goctl rpc protoc "./core/member/proto/rpc/main.proto" --go_out=./core/member/rpc --go-grpc_out=./core/member/rpc --zrpc_out=./core/member/rpc --style=go_zero -I . -I "./std/proto"
+
+syntax = "proto3";
+
+package shrine.member;
+
+option go_package = "./pb";
+
+message Empty {
+
+}
+
+service Service {
+  rpc Hello(Empty) returns (Empty);
+}
