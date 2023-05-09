@@ -15,23 +15,25 @@ import "validate/validate.proto";
 message Category {
   int64 categoryId = 1; // 分类ID
   int64 parentId = 2; // 父ID
-  string name = 3; // 分类名称
-  string remark = 4; // 分类描述
-  string icon = 5; // 分类图标
-  int64 level = 6; // 层级,从1开始
-  int64 status = 7; // 状态:0-禁用,1-启用,2-已删除
-  int64 weight = 8; // 排序
-  int64 updateTime = 9; // 更新时间
+  int64 groupId = 3; // 分组ID
+  string name = 4; // 分类名称
+  string remark = 5; // 分类描述
+  string icon = 6; // 分类图标
+  int64 level = 7; // 层级,从1开始
+  int64 status = 8; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 9; // 排序
+  int64 updateTime = 10; // 更新时间
 }
 
 message CategoryNode {
   int64 categoryId = 1; // 分类ID
   int64 parentId = 2; // 父ID
-  string name = 3; // 分类名称
-  string remark = 4; // 分类描述
-  string icon = 5; // 分类图标
-  int64 level = 6; // 层级,从1开始
-  repeated CategoryNode children = 7;
+  int64 groupId = 3; // 分组ID
+  string name = 4; // 分类名称
+  string remark = 5; // 分类描述
+  string icon = 6; // 分类图标
+  int64 level = 7; // 层级,从1开始
+  repeated CategoryNode children = 8;
 }
 
 message Brand {
@@ -70,11 +72,12 @@ message ListCategoriesOutput {
 
 message AddCategoryInput {
   int64 parentId = 1 [(validate.rules).int64.gte = 0]; // 父ID
-  string name = 2 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
-  string remark = 3 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
-  string icon = 4 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 分类图标
-  int64 status = 5 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
-  int64 weight = 6 [(validate.rules).int64.gte = 0]; // 排序
+  int64 groupId = 2 [(validate.rules).int64.gte = 0]; // 分组ID
+  string name = 3 [(validate.rules).string.pattern = "^[/a-zA-Z0-9\u4e00-\u9fa5]{1,24}$"]; // 名称
+  string remark = 4 [(validate.rules).string.pattern = "^[!！?？,，.。:：;；\\-——a-zA-Z0-9\u4e00-\u9fa5]{1,36}$"]; // 备注
+  string icon = 5 [(validate.rules).string.pattern = "^[/\\-?=_.a-zA-Z0-9]{1,128}$"]; // 分类图标
+  int64 status = 6 [(validate.rules).int64 = {in: [0, 1, 2]}]; // 状态:0-禁用,1-启用,2-已删除
+  int64 weight = 7 [(validate.rules).int64.gte = 0]; // 排序
 }
 
 message AddCategoryOutput {

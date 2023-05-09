@@ -8,6 +8,7 @@ create table category
 (
     category_id bigint       not null comment '分类ID',
     parent_id   bigint       not null comment '父ID',
+    group_id    bigint       not null comment '分类分组ID(仅1级分类有效)',
     name        varchar(24)  not null comment '分类名称',
     remark      varchar(36)  not null comment '分类描述',
     icon        varchar(128) not null comment '分类图标',

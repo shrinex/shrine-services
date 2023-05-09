@@ -43,6 +43,7 @@ func (l *AddCategoryLogic) AddCategory(in *pb.AddCategoryInput) (*pb.AddCategory
 	_, err = l.svcCtx.DB.CategoryDao.Insert(l.ctx, &model.Category{
 		CategoryId: catId,
 		ParentId:   in.GetParentId(),
+		GroupId:    in.GetGroupId(),
 		Name:       in.GetName(),
 		Remark:     in.GetRemark(),
 		Icon:       in.GetIcon(),
