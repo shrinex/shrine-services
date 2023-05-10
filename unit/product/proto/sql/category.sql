@@ -1,4 +1,4 @@
--- goctl model mysql ddl -src="./proto/sql/category.sql" -dir="./proto/model" -c --style=go_zero
+-- goctl model mysql ddl -src="./unit/product/proto/sql/category.sql" -dir="./unit/product/proto/model" -c --style=go_zero
 
 create database if not exists product;
 use product;
@@ -18,6 +18,7 @@ create table category
     create_time datetime     not null default current_timestamp comment '创建时间',
     update_time datetime     not null default current_timestamp on update current_timestamp comment '更新时间',
     primary key (category_id),
-    unique key uk_name (name),
+    key idx_name (name),
+    key idx_groupid (group_id),
     key idx_parentid (parent_id)
 ) comment '产品分类表';

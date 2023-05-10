@@ -1,4 +1,4 @@
--- goctl model mysql ddl -src="./proto/sql/role_menu_rel.sql" -dir="./proto/model" --style=go_zero
+-- goctl model mysql ddl -src="./core/authz/proto/sql/role_menu_rel.sql" -dir="./core/authz/proto/model" --style=go_zero
 
 create database if not exists authz;
 use authz;

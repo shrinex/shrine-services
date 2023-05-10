@@ -19,4 +19,4 @@ service main {
 	put / (CreateShopReq) returns (CreateShopResp)
 }
 
-// goctl api go --api="./proto/api/main.api" --dir="./api" --style=go_zero
+// goctl api go --api="./biz/platform/proto/api/main.api" --dir="./biz/platform/api" --style=go_zero

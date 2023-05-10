@@ -49,7 +49,7 @@ func (m *customUserModel) CountUsers(ctx context.Context, sysType int64, shopId 
 		Where("sys_type = ? AND shop_id = ?", sysType, shopId)
 
 	if stringx.NotEmpty(nickname) {
-		builder = builder.Where(squirrel.Like{"nickname": "%" + nickname})
+		builder = builder.Where(squirrel.Like{"nickname": nickname + "%"})
 	}
 
 	var resp int64
@@ -65,7 +65,7 @@ func (m *customUserModel) PageUsers(ctx context.Context, pageNo int64, pageSize 
 		Where("sys_type = ? AND shop_id = ?", sysType, shopId)
 
 	if stringx.NotEmpty(nickname) {
-		builder = builder.Where(squirrel.Like{"nickname": "%" + nickname})
+		builder = builder.Where(squirrel.Like{"nickname": nickname + "%"})
 	}
 
 	query, args := builder.

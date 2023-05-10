@@ -1,4 +1,4 @@
--- goctl model mysql ddl -src="./proto/sql/brand_category_rel.sql" -dir="./proto/model" --style=go_zero
+-- goctl model mysql ddl -src="./unit/product/proto/sql/brand_category_rel.sql" -dir="./unit/product/proto/model" --style=go_zero
 
 create database if not exists product;
 use product;

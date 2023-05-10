@@ -37,7 +37,7 @@ func NewCategoryModel(conn sqlx.SqlConn, c cache.CacheConf) CategoryModel {
 func (m *customCategoryModel) ListCategories(ctx context.Context, name string) ([]*Category, error) {
 	builder := squirrel.Select(categoryRows).From("category")
 	if stringx.NotEmpty(name) {
-		builder.Where(squirrel.Like{"name": "%" + name})
+		builder = builder.Where(squirrel.Like{"name": name + "%"})
 	}
 
 	query, args := builder.MustSql()

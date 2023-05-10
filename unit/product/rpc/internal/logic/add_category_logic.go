@@ -65,15 +65,6 @@ func (l *AddCategoryLogic) AddCategory(in *pb.AddCategoryInput) (*pb.AddCategory
 }
 
 func (l *AddCategoryLogic) validate(in *pb.AddCategoryInput) (int64, error) {
-	maybe, err := l.svcCtx.DB.CategoryDao.FindOneByName(l.ctx, in.GetName())
-	if err != nil && !errors.Is(err, sqlx.ErrNotFound) {
-		return 0, err
-	}
-
-	if maybe != nil {
-		return 0, errCategoryExists
-	}
-
 	if in.GetParentId() == rootCategoryId {
 		return 1, nil
 	}

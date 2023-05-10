@@ -1,4 +1,4 @@
--- goctl model mysql ddl -src="./proto/sql/attr.sql" -dir="./proto/model" -c --style=go_zero
+-- goctl model mysql ddl -src="./unit/product/proto/sql/attr.sql" -dir="./unit/product/proto/model" -c --style=go_zero
 
 create database if not exists product;
 use product;

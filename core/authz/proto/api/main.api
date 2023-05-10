@@ -23,4 +23,4 @@ service main {
 	get /user/resources (ListResourcesReq) returns (ListResourcesResp)
 }
 
-// goctl api go --api="./proto/api/main.api" --dir="./api" --style=go_zero
+// goctl api go --api="./core/authz/proto/api/main.api" --dir="./core/authz/api" --style=go_zero

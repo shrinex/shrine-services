@@ -23,4 +23,4 @@ service main {
 	post /logout (LogoutReq) returns (LogoutResp)
 }
 
-// goctl api go --api="./proto/api/main.api" --dir="./api" --style=go_zero
+// goctl api go --api="./core/authc/proto/api/main.api" --dir="./core/authc/api" --style=go_zero
