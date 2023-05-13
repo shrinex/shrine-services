@@ -7,10 +7,10 @@ info(
 
 type (
     LoginReq {
-        SysType int64 `json:"sysType" valid:"$>=1 && $<=3; msg:'无效的系统类型'"`                                 // 系统类型
-        Platform string `json:"platform,optional" valid:"regexp('^[a-zA-Z0-9]{1,8}$'); msg:'无效的平台类型'"`     // 平台
-        Username string `json:"username" valid:"regexp('^[a-zA-Z0-9]{5,8}$'); msg:'用户名仅支持5-8位字母和数字'"` // 用户名
-        Password string `json:"password" valid:"regexp('^[@$_a-zA-Z0-9]{5,8}$'); msg:'密码格式不正确'"`           // 密码
+        SysType int64 `json:"sysType" valid:"$>=1 && $<=3; msg:'无效的系统类型'"`                                               // 系统类型
+        Platform string `json:"platform,optional" valid:"regexp('^[a-zA-Z0-9]{1,8}$'); msg:'无效的平台类型'"`                   // 平台
+        Username string `json:"username" valid:"len($) > 0 && regexp('^[a-zA-Z0-9]{5,8}$'); msg:'用户名仅支持5-8位字母和数字'"` // 用户名
+        Password string `json:"password" valid:"len($) > 0 && regexp('^[@$_a-zA-Z0-9]{5,8}$'); msg:'密码格式不正确'"`           // 密码
     }
 
     LoginResp {

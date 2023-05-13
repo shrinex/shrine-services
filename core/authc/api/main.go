@@ -11,6 +11,7 @@ import (
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
+	_ "shrine/std/valid" // register global validator
 )
 
 var configFile = flag.String("f", "etc/main.yaml", "the config file")
@@ -21,7 +22,7 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
-	server := rest.MustNewServer(c.RestConf)
+	server := rest.MustNewServer(c.RestConf, rest.WithCors())
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
