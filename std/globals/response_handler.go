@@ -26,10 +26,7 @@ func ErrorCtx(ctx context.Context, w http.ResponseWriter, err error) {
 		return
 	}
 
-	httpx.OkJsonCtx(ctx, w, &Response{
-		Code:    int32(codes.Internal),
-		Message: evalMessage(err),
-	})
+	httpx.OkJsonCtx(ctx, w, evalResponse(err))
 }
 
 func OkJsonCtx(ctx context.Context, w http.ResponseWriter, v any) {
@@ -40,26 +37,44 @@ func OkJsonCtx(ctx context.Context, w http.ResponseWriter, v any) {
 	})
 }
 
-func evalMessage(err error) string {
+func evalResponse(err error) *Response {
 	if errors.Is(err, authc.ErrInvalidToken) {
-		return "token格式不正确"
+		return &Response{
+			Code:    http.StatusBadRequest,
+			Message: "token格式不正确",
+		}
 	}
 
 	if errors.Is(err, authc.ErrUnauthenticated) {
-		return "请先登录"
+		return &Response{
+			Code:    http.StatusUnauthorized,
+			Message: "请先登录",
+		}
 	}
 
 	if errors.Is(err, semgt.ErrExpired) {
-		return "会话已过期，请重新登录"
+		return &Response{
+			Code:    int32(SessionExpired),
+			Message: "会话已过期，请重新登录",
+		}
 	}
 
 	if errors.Is(err, semgt.ErrReplaced) {
-		return "当前账号已在其它设备登录"
+		return &Response{
+			Code:    int32(SessionReplaced),
+			Message: "当前账号已在其它设备登录",
+		}
 	}
 
 	if errors.Is(err, semgt.ErrOverflow) {
-		return "会话已超限，请重新登录"
+		return &Response{
+			Code:    int32(SessionOverflow),
+			Message: "会话已超限，请重新登录",
+		}
 	}
 
-	return err.Error()
+	return &Response{
+		Code:    int32(codes.Internal),
+		Message: err.Error(),
+	}
 }
