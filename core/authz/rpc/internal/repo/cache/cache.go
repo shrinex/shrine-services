@@ -20,7 +20,7 @@ func NewRepository(cfg config.Config) *Repository {
 	)
 	return &Repository{
 		RoleCache: roleCache,
-		MenuCache: NewMenuCache(cfg.Cache,
+		MenuCache: NewMenuCache(cfg.Cache, roleCache,
 			model.NewMenuModel(mysqlConn, cfg.Cache),
 		),
 		ResourceGroupCache: NewResourceGroupCache(cfg.Cache,

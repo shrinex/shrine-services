@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -17,6 +18,8 @@ type (
 		menuModel
 		CountMenus(context.Context, int64) (int64, error)
 		PageMenus(context.Context, int64, int64, int64) ([]*Menu, error)
+		ListAllMenusBySysType(context.Context, int64) ([]*Menu, error)
+		ListMenusBySysTypeAndRoleId(context.Context, int64, int64) ([]*Menu, error)
 	}
 
 	customMenuModel struct {
@@ -52,6 +55,28 @@ func (m *customMenuModel) PageMenus(ctx context.Context, pageNo int64, pageSize 
 		MustSql()
 
 	resp := slices.Empty[*Menu]()
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
+	return resp, err
+}
+
+func (m *customMenuModel) ListAllMenusBySysType(ctx context.Context, sysType int64) ([]*Menu, error) {
+	var resp []*Menu
+	query := fmt.Sprintf("select * from %s where `sys_type` = ?", m.table)
+	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, sysType)
+	if err != nil {
+		return slices.Empty[*Menu](), err
+	}
+
+	return resp, nil
+}
+
+func (m *customMenuModel) ListMenusBySysTypeAndRoleId(ctx context.Context, sysType int64, roleId int64) ([]*Menu, error) {
+	resp := slices.Empty[*Menu]()
+	query, args := squirrel.Select("m.*").
+		From("role_menu_rel rmr").
+		Join("menu m ON rmr.menu_id = m.menu_id").
+		Where("m.sys_type = ? AND rmr.role_id = ?", sysType, roleId).
+		MustSql()
 	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, args...)
 	return resp, err
 }

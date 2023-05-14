@@ -51,7 +51,7 @@ func (m *customRoleResourceRelModel) CountRoleIdsByResourceId(ctx context.Contex
 
 func (m *customRoleResourceRelModel) PageRoleIdsByResourceId(ctx context.Context, offset int64, size int64, roleId int64) ([]int64, error) {
 	query, args := squirrel.Select("role_id").
-		From("resource_id").
+		From("role_resource_rel").
 		Where("resource_id = ?", roleId).
 		Limit(uint64(size)).
 		Offset(uint64(offset)).

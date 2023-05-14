@@ -1,7 +1,7 @@
 // grpcui -plaintext localhost:9002
 
 // mkdir ./core/authz/rpc/pb
-// protoc -I "./core/authz/proto/rpc" -I "./std/proto" --go_out="paths=source_relative:./core/authz/rpc/pb" --validate_out="lang=go,hs=source_relative:./core/authz/patrpc/pb" main.proto
+// protoc -I "./core/authz/proto/rpc" -I "./std/proto" --go_out="paths=source_relative:./core/authz/rpc/pb" --validate_out="lang=go,paths=source_relative:./core/authz/rpc/pb" main.proto
 // goctl rpc protoc "./core/authz/proto/rpc/main.proto" --go_out=./core/authz/rpc --go-grpc_out=./core/authz/rpc --zrpc_out=./core/authz/rpc --style=go_zero -I . -I "./std/proto"
 
 syntax = "proto3";
@@ -173,40 +173,53 @@ message PageMenusOutput {
   repeated Menu rows = 3;
 }
 
+message ListMenusInput {
+  int64 userId = 1 [(validate.rules).int64.gte = 0];
+  int64 sysType = 2 [(validate.rules).int64 = {in: [1, 2, 3]}];
+  int64 isAdmin = 3 [(validate.rules).int64 = {in: [0, 1]}];
+}
+
+message ListMenusOutput {
+  repeated Menu menus = 1;
+}
+
 service Service {
   // AddRole 添加角色
   rpc AddRole(AddRoleInput) returns(AddRoleOutput);
 
-  // AddResource 添加资源
-  rpc AddResource(AddResourceInput) returns(AddResourceOutput);
-
-  // AddResourceGroup 添加资源分组
-  rpc AddResourceGroup(AddResourceGroupInput) returns(AddResourceGroupOutput);
-
-  // AddMenu 添加菜单
-  rpc AddMenu(AddMenuInput) returns(AddMenuOutput);
-
   // RemoveRole 删除角色
   rpc RemoveRole(RemoveRoleInput) returns(RemoveRoleOutput);
-
-  // RemoveResource 删除资源
-  rpc RemoveResource(RemoveResourceInput) returns(RemoveResourceOutput);
-
-  // RemoveResourceGroup 删除资源分组
-  rpc RemoveResourceGroup(RemoveResourceGroupInput) returns(RemoveResourceGroupOutput);
-
-  // RemoveMenu 删除菜单
-  rpc RemoveMenu(RemoveMenuInput) returns(RemoveMenuOutput);
 
   // ListRoles 查询用户拥有的角色列表
   rpc ListRoles(ListRolesInput) returns(ListRolesOutput);
 
+  // AddResource 添加资源
+  rpc AddResource(AddResourceInput) returns(AddResourceOutput);
+
+  // RemoveResource 删除资源
+  rpc RemoveResource(RemoveResourceInput) returns(RemoveResourceOutput);
+
   // ListResources 查询用户拥有的资源列表
   rpc ListResources(ListResourcesInput) returns(ListResourcesOutput);
+
+  // AddResourceGroup 添加资源分组
+  rpc AddResourceGroup(AddResourceGroupInput) returns(AddResourceGroupOutput);
+
+  // RemoveResourceGroup 删除资源分组
+  rpc RemoveResourceGroup(RemoveResourceGroupInput) returns(RemoveResourceGroupOutput);
 
   // PageResourcesGroups 分页查询系统中的资源分组
   rpc PageResourcesGroups(PageResourcesGroupsInput) returns(PageResourcesGroupsOutput);
 
+  // AddMenu 添加菜单
+  rpc AddMenu(AddMenuInput) returns(AddMenuOutput);
+
+  // RemoveMenu 删除菜单
+  rpc RemoveMenu(RemoveMenuInput) returns(RemoveMenuOutput);
+
   // PageMenus 分页查询系统中的菜单列表
   rpc PageMenus(PageMenusInput) returns(PageMenusOutput);
+
+  // ListMenus 查询用户拥有的菜单列表
+  rpc ListMenus(ListMenusInput) returns(ListMenusOutput);
 }

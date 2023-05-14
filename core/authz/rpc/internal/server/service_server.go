@@ -28,46 +28,10 @@ func (s *ServiceServer) AddRole(ctx context.Context, in *pb.AddRoleInput) (*pb.A
 	return l.AddRole(in)
 }
 
-// AddResource 添加资源
-func (s *ServiceServer) AddResource(ctx context.Context, in *pb.AddResourceInput) (*pb.AddResourceOutput, error) {
-	l := logic.NewAddResourceLogic(ctx, s.svcCtx)
-	return l.AddResource(in)
-}
-
-// AddResourceGroup 添加资源分组
-func (s *ServiceServer) AddResourceGroup(ctx context.Context, in *pb.AddResourceGroupInput) (*pb.AddResourceGroupOutput, error) {
-	l := logic.NewAddResourceGroupLogic(ctx, s.svcCtx)
-	return l.AddResourceGroup(in)
-}
-
-// AddMenu 添加菜单
-func (s *ServiceServer) AddMenu(ctx context.Context, in *pb.AddMenuInput) (*pb.AddMenuOutput, error) {
-	l := logic.NewAddMenuLogic(ctx, s.svcCtx)
-	return l.AddMenu(in)
-}
-
 // RemoveRole 删除角色
 func (s *ServiceServer) RemoveRole(ctx context.Context, in *pb.RemoveRoleInput) (*pb.RemoveRoleOutput, error) {
 	l := logic.NewRemoveRoleLogic(ctx, s.svcCtx)
 	return l.RemoveRole(in)
-}
-
-// RemoveResource 删除资源
-func (s *ServiceServer) RemoveResource(ctx context.Context, in *pb.RemoveResourceInput) (*pb.RemoveResourceOutput, error) {
-	l := logic.NewRemoveResourceLogic(ctx, s.svcCtx)
-	return l.RemoveResource(in)
-}
-
-// RemoveResourceGroup 删除资源分组
-func (s *ServiceServer) RemoveResourceGroup(ctx context.Context, in *pb.RemoveResourceGroupInput) (*pb.RemoveResourceGroupOutput, error) {
-	l := logic.NewRemoveResourceGroupLogic(ctx, s.svcCtx)
-	return l.RemoveResourceGroup(in)
-}
-
-// RemoveMenu 删除菜单
-func (s *ServiceServer) RemoveMenu(ctx context.Context, in *pb.RemoveMenuInput) (*pb.RemoveMenuOutput, error) {
-	l := logic.NewRemoveMenuLogic(ctx, s.svcCtx)
-	return l.RemoveMenu(in)
 }
 
 // ListRoles 查询用户拥有的角色列表
@@ -76,10 +40,34 @@ func (s *ServiceServer) ListRoles(ctx context.Context, in *pb.ListRolesInput) (*
 	return l.ListRoles(in)
 }
 
+// AddResource 添加资源
+func (s *ServiceServer) AddResource(ctx context.Context, in *pb.AddResourceInput) (*pb.AddResourceOutput, error) {
+	l := logic.NewAddResourceLogic(ctx, s.svcCtx)
+	return l.AddResource(in)
+}
+
+// RemoveResource 删除资源
+func (s *ServiceServer) RemoveResource(ctx context.Context, in *pb.RemoveResourceInput) (*pb.RemoveResourceOutput, error) {
+	l := logic.NewRemoveResourceLogic(ctx, s.svcCtx)
+	return l.RemoveResource(in)
+}
+
 // ListResources 查询用户拥有的资源列表
 func (s *ServiceServer) ListResources(ctx context.Context, in *pb.ListResourcesInput) (*pb.ListResourcesOutput, error) {
 	l := logic.NewListResourcesLogic(ctx, s.svcCtx)
 	return l.ListResources(in)
+}
+
+// AddResourceGroup 添加资源分组
+func (s *ServiceServer) AddResourceGroup(ctx context.Context, in *pb.AddResourceGroupInput) (*pb.AddResourceGroupOutput, error) {
+	l := logic.NewAddResourceGroupLogic(ctx, s.svcCtx)
+	return l.AddResourceGroup(in)
+}
+
+// RemoveResourceGroup 删除资源分组
+func (s *ServiceServer) RemoveResourceGroup(ctx context.Context, in *pb.RemoveResourceGroupInput) (*pb.RemoveResourceGroupOutput, error) {
+	l := logic.NewRemoveResourceGroupLogic(ctx, s.svcCtx)
+	return l.RemoveResourceGroup(in)
 }
 
 // PageResourcesGroups 分页查询系统中的资源分组
@@ -88,8 +76,26 @@ func (s *ServiceServer) PageResourcesGroups(ctx context.Context, in *pb.PageReso
 	return l.PageResourcesGroups(in)
 }
 
+// AddMenu 添加菜单
+func (s *ServiceServer) AddMenu(ctx context.Context, in *pb.AddMenuInput) (*pb.AddMenuOutput, error) {
+	l := logic.NewAddMenuLogic(ctx, s.svcCtx)
+	return l.AddMenu(in)
+}
+
+// RemoveMenu 删除菜单
+func (s *ServiceServer) RemoveMenu(ctx context.Context, in *pb.RemoveMenuInput) (*pb.RemoveMenuOutput, error) {
+	l := logic.NewRemoveMenuLogic(ctx, s.svcCtx)
+	return l.RemoveMenu(in)
+}
+
 // PageMenus 分页查询系统中的菜单列表
 func (s *ServiceServer) PageMenus(ctx context.Context, in *pb.PageMenusInput) (*pb.PageMenusOutput, error) {
 	l := logic.NewPageMenusLogic(ctx, s.svcCtx)
 	return l.PageMenus(in)
+}
+
+// ListMenus 查询用户拥有的菜单列表
+func (s *ServiceServer) ListMenus(ctx context.Context, in *pb.ListMenusInput) (*pb.ListMenusOutput, error) {
+	l := logic.NewListMenusLogic(ctx, s.svcCtx)
+	return l.ListMenus(in)
 }
