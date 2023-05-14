@@ -28,10 +28,11 @@ func NewListRolesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListRol
 }
 
 func (l *ListRolesLogic) ListRoles(_ *types.ListRolesReq) (resp *types.ListRolesResp, err error) {
+	roles := slices.Empty[*types.Role]()
 	userDetails, err := l.svcCtx.Subject.UserDetails(l.ctx)
 	if err != nil {
 		resp = &types.ListRolesResp{
-			Roles: slices.Empty[types.Role](),
+			Roles: roles,
 		}
 		return
 	}
@@ -46,13 +47,14 @@ func (l *ListRolesLogic) ListRoles(_ *types.ListRolesReq) (resp *types.ListRoles
 	output, err := l.svcCtx.AuthzRpc.ListRoles(l.ctx, input)
 	if err != nil {
 		resp = &types.ListRolesResp{
-			Roles: slices.Empty[types.Role](),
+			Roles: roles,
 		}
 		return
 	}
 
-	var roles []types.Role
 	_ = copier.Copy(&roles, output.GetRoles())
-	resp = &types.ListRolesResp{Roles: roles}
+	resp = &types.ListRolesResp{
+		Roles: roles,
+	}
 	return
 }

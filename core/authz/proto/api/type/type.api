@@ -26,6 +26,28 @@ type (
         CreateTime int64 `json:"createTime"`  // 创建时间
         UpdateTime int64 `json:"updateTime"`  // 更新时间
     }
+
+    Menu {
+        MenuId int64 `json:"menuId"`         // 菜单ID
+        Name string `json:"name"`            // 菜单名称
+        Icon string `json:"icon"`            // 图标
+        ParentId int64 `json:"parentId"`     // 父级菜单ID,0表示一级菜单
+        Level int64 `json:"level"`           // 层级[1-2]
+        Path string `json:"path"`            // 路径,从一级菜单ID到当前菜单ID
+        SysType int64 `json:"sysType"`       // 系统类型: 1-平台端,2-商家端,3-普通用户
+        Weight int64 `json:"weight"`         // 权重
+        CreateTime int64 `json:"createTime"` // 创建时间
+        UpdateTime int64 `json:"updateTime"` // 更新时间
+    }
+
+    MenuNode {
+        MenuId int64 `json:"menuId"`           // 菜单ID
+        Name string `json:"name"`              // 菜单名称
+        Icon string `json:"icon"`              // 图标
+        ParentId int64 `json:"parentId"`       // 父级菜单ID,0表示一级菜单
+        Level int64 `json:"level"`             // 层级[1-2]
+        Children []*MenuNode `json:"children"` // 子菜单
+    }
 )
 
 type (
@@ -33,7 +55,7 @@ type (
     }
 
     ListRolesResp {
-        Roles []Role `json:"roles"`
+        Roles []*Role `json:"roles"`
     }
 )
 
@@ -42,6 +64,38 @@ type (
     }
 
     ListResourcesResp {
-        Resources []Resource `json:"resources"`
+        Resources []*Resource `json:"resources"`
+    }
+)
+
+type (
+    ListMenusReq {
+    }
+
+    ListMenusResp {
+        Menus []*MenuNode `json:"menus"`
+    }
+)
+
+type (
+    AddMenuReq {
+        Name string `json:"name" valid:"len($) > 0 && regexp('^[a-zA-Z0-9\u4e00-\u9fa5]{1,12}$'); msg:'菜单名称支持1-12位中文、字母和数字'"`
+        Icon string `json:"icon" valid:"len($) > 0 && regexp('^[/\\-?=_.a-zA-Z0-9]{1,128}$'); msg:'图标路径不合法'"`
+        ParentId int64 `json:"parentId" valid:"$>=0; msg:'无效的父级菜单'"`
+        SysType int64 `json:"sysType" valid:"$>=1 && $<=2; msg:'无效的系统类型'"`
+        Weight int64 `json:"weight" valid:"$>=0; msg:'权重不能小于0'"`
+    }
+
+    AddMenuResp {
+        MenuId int64 `json:"menuId"`
+    }
+)
+
+type (
+    RemoveMenuReq {
+        MenuId int64 `path:"menuId" valid:"$>=0; msg:'菜单不存在'"`
+    }
+
+    RemoveMenuResp {
     }
 )

@@ -47,7 +47,7 @@ message Menu {
   string name = 2; // 菜单名称
   string icon = 3; // 图标
   int64 parentId = 4; //父级菜单ID,0表示一级菜单
-  int64 level = 5; // 层级[1-3]
+  int64 level = 5; // 层级[1-2]
   string path = 6; // 路径,从一级菜单ID到当前菜单ID
   int64 sysType = 7; // 系统类型: 1-平台端,2-商家端,3-普通用户
   int64 weight = 8; // 权重

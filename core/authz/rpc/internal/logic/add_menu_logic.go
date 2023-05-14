@@ -71,6 +71,12 @@ func (l *AddMenuLogic) AddMenu(in *pb.AddMenuInput) (*pb.AddMenuOutput, error) {
 		return nil, err
 	}
 
+	// 清除管理员资源缓存
+	err = l.svcCtx.Cache.MenuCache.ClearMenusBySysType(l.ctx, in.GetSysType())
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.AddMenuOutput{
 		MenuId: menuId,
 	}, nil

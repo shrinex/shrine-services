@@ -14,11 +14,23 @@ info(
 	group: auth
 )
 service main {
-	@doc "登录"
+	@doc "查询用户拥有的菜单列表"
+	@handler ListMenus
+	get /user/menus (ListMenusReq) returns (ListMenusResp)
+	
+	@doc "查询用户拥有的菜单列表"
+	@handler AddMenu
+	put /user/menu (AddMenuReq) returns (AddMenuResp)
+	
+	@doc "查询用户拥有的菜单列表"
+	@handler RemoveMenu
+	delete /user/menu/:menuId (RemoveMenuReq) returns (RemoveMenuResp)
+	
+	@doc "查询用户拥有的角色列表"
 	@handler ListRoles
 	get /user/roles (ListRolesReq) returns (ListRolesResp)
 	
-	@doc "登出"
+	@doc "查询用户拥有的资源列表"
 	@handler ListResources
 	get /user/resources (ListResourcesReq) returns (ListResourcesResp)
 }

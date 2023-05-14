@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/shrinex/shield/authc"
 	"github.com/shrinex/shield/security"
+	"github.com/shrinex/shield/semgt"
 )
 
 type (
@@ -30,7 +31,7 @@ func (r *bearerAuthRealm) LoadUserDetails(ctx context.Context, token authc.Token
 	}
 
 	if session == nil {
-		return nil, authc.ErrUnauthenticated
+		return nil, semgt.ErrExpired
 	}
 
 	var userDetails UserDetails
@@ -38,7 +39,7 @@ func (r *bearerAuthRealm) LoadUserDetails(ctx context.Context, token authc.Token
 	if err != nil {
 		return nil, err
 	} else if !found {
-		return nil, authc.ErrUnauthenticated
+		return nil, semgt.ErrExpired
 	}
 
 	return &userDetails, nil

@@ -15,6 +15,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
+				Path:    "/user/menus",
+				Handler: auth.ListMenusHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/user/menu",
+				Handler: auth.AddMenuHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodDelete,
+				Path:    "/user/menu/:menuId",
+				Handler: auth.RemoveMenuHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
 				Path:    "/user/roles",
 				Handler: auth.ListRolesHandler(serverCtx),
 			},

@@ -28,10 +28,11 @@ func NewListResourcesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Lis
 }
 
 func (l *ListResourcesLogic) ListResources(_ *types.ListResourcesReq) (resp *types.ListResourcesResp, err error) {
+	resources := slices.Empty[*types.Resource]()
 	userDetails, err := l.svcCtx.Subject.UserDetails(l.ctx)
 	if err != nil {
 		resp = &types.ListResourcesResp{
-			Resources: slices.Empty[types.Resource](),
+			Resources: resources,
 		}
 		return
 	}
@@ -46,13 +47,14 @@ func (l *ListResourcesLogic) ListResources(_ *types.ListResourcesReq) (resp *typ
 	output, err := l.svcCtx.AuthzRpc.ListResources(l.ctx, input)
 	if err != nil {
 		resp = &types.ListResourcesResp{
-			Resources: slices.Empty[types.Resource](),
+			Resources: resources,
 		}
 		return
 	}
 
-	var resources []types.Resource
 	_ = copier.Copy(&resources, output.GetResources())
-	resp = &types.ListResourcesResp{Resources: resources}
+	resp = &types.ListResourcesResp{
+		Resources: resources,
+	}
 	return
 }

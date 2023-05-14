@@ -75,11 +75,7 @@ func (r *RedisSessionRepository) readSession(ctx context.Context, token string, 
 		return nil, err
 	}
 
-	session, err := r.loadSession(token, entries)
-	if err != nil {
-		return nil, err
-	}
-
+	session := r.loadSession(token, entries)
 	expired, err := session.Expired(ctx)
 	if err != nil {
 		return nil, err
@@ -92,7 +88,7 @@ func (r *RedisSessionRepository) readSession(ctx context.Context, token string, 
 	return newSession(session, r.Redis, r.flushMode, false), nil
 }
 
-func (r *RedisSessionRepository) loadSession(token string, entries map[string]string) (*semgt.MapSession, error) {
+func (r *RedisSessionRepository) loadSession(token string, entries map[string]string) *semgt.MapSession {
 	session := semgt.NewSession(token, r.codec)
 
 	for key, value := range entries {
@@ -113,5 +109,5 @@ func (r *RedisSessionRepository) loadSession(token string, entries map[string]st
 		}
 	}
 
-	return session, nil
+	return session
 }
